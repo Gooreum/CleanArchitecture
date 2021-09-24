@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E1D26DA26FDE0D6004F3AAF /* Movies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1D26D926FDE0D6004F3AAF /* Movies.swift */; };
 		2E2A607B26FDC49400624E57 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2A607A26FDC49400624E57 /* AppDelegate.swift */; };
 		2E2A607D26FDC49400624E57 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2A607C26FDC49400624E57 /* SceneDelegate.swift */; };
 		2E2A607F26FDC49400624E57 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2A607E26FDC49400624E57 /* ViewController.swift */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2E1D26D926FDE0D6004F3AAF /* Movies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Movies.swift; sourceTree = "<group>"; };
 		2E2A607726FDC49400624E57 /* CleanArchitecture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CleanArchitecture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E2A607A26FDC49400624E57 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2E2A607C26FDC49400624E57 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -53,6 +55,7 @@
 		2E1D26D526FDD5D6004F3AAF /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				2E1D26D926FDE0D6004F3AAF /* Movies.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -231,6 +234,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E2A607F26FDC49400624E57 /* ViewController.swift in Sources */,
+				2E1D26DA26FDE0D6004F3AAF /* Movies.swift in Sources */,
 				2E2A607B26FDC49400624E57 /* AppDelegate.swift in Sources */,
 				2E2A607D26FDC49400624E57 /* SceneDelegate.swift in Sources */,
 			);
