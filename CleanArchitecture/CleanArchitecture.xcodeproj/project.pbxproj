@@ -60,19 +60,19 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		2E1D26D626FDD5DD004F3AAF /* Server */ = {
+		2E1D26D626FDD5DD004F3AAF /* Service */ = {
 			isa = PBXGroup;
 			children = (
 			);
-			path = Server;
+			path = Service;
 			sourceTree = "<group>";
 		};
-		2E1D26D726FDD5F5004F3AAF /* ViewController */ = {
+		2E1D26D726FDD5F5004F3AAF /* View */ = {
 			isa = PBXGroup;
 			children = (
 				2E2A607E26FDC49400624E57 /* ViewController.swift */,
 			);
-			path = ViewController;
+			path = View;
 			sourceTree = "<group>";
 		};
 		2E2A606E26FDC49400624E57 = {
@@ -96,8 +96,9 @@
 		2E2A607926FDC49400624E57 /* CleanArchitecture */ = {
 			isa = PBXGroup;
 			children = (
-				2E1D26D626FDD5DD004F3AAF /* Server */,
-				2E1D26D726FDD5F5004F3AAF /* ViewController */,
+				2E1D26D626FDD5DD004F3AAF /* Service */,
+				2E1D26D726FDD5F5004F3AAF /* View */,
+				2ECA525A26FF190700CEE7C6 /* ViewModel */,
 				2E1D26D526FDD5D6004F3AAF /* Model */,
 				2E2A607A26FDC49400624E57 /* AppDelegate.swift */,
 				2E2A607C26FDC49400624E57 /* SceneDelegate.swift */,
@@ -107,6 +108,13 @@
 				2E2A608826FDC49500624E57 /* Info.plist */,
 			);
 			path = CleanArchitecture;
+			sourceTree = "<group>";
+		};
+		2ECA525A26FF190700CEE7C6 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		99B2ABAE5F04031AE0E8FEDE /* Pods */ = {
