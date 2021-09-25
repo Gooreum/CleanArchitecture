@@ -9,4 +9,6 @@ target 'CleanArchitecture' do
   pod 'Alamofire'
   pod 'AlamofireObjectMapper'
   pod 'SwiftyJSON'
+  pod 'RxSwift'
+  pod 'RxCocoa'
 end
