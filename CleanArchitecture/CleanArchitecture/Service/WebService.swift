@@ -21,7 +21,7 @@ class WebService {
     typealias MoviesDataCompletion = ([Movie]?, WebError?) -> ()
 
     private func fetchMoviesPlaying(page: Int, completion: @escaping MoviesDataCompletion) {
-        let url = composeUrlRequest(endpoint: endpoint, page: page)
+        let url = composeMoviesPlayingUrlRequest(endpoint: endpoint, page: page)
         
         AF.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil, interceptor: nil).responseDecodable(of: MovieResponse.self) { response in
             guard response.error == nil else {
@@ -50,7 +50,7 @@ class WebService {
                     observer.onNext(movies)
                 }
                 observer.onCompleted()                
-            }
+            }            
             return Disposables.create()
         }
     }
