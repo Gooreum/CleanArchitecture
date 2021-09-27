@@ -7,8 +7,8 @@ target 'CleanArchitecture' do
 
   # Pods for CleanArchitecture
   pod 'Alamofire'
-  pod 'AlamofireObjectMapper'
-  pod 'SwiftyJSON'
   pod 'RxSwift'
   pod 'RxCocoa'
+  pod 'RxCoreData'
+  pod 'Action'
 end
