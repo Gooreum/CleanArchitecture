@@ -18,29 +18,31 @@ class MoviesPlayingListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setMovesPlayingList()
+        setUpBindings()
     }
     
-    private func setMovesPlayingList() {
-        viewModel.moviesPlayingList
-            .bind(to: tableView.rx.items(cellIdentifier: "Cell")) { (index, movies, cell) in
-                guard let cell = cell as? MoviesPlayingTableViewCell else {
-                    return
-                }
-                cell.labelOverview.text = movies.overview
-                cell.labelReleaseDate.text = movies.release_date
-                cell.labelTitle.text = movies.title
+    func setUpBindings() {
+        viewModel.convertMoviesPlayingDataAsStream(page: 1)
+            .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: MoviesPlayingTableViewCell.self)) { [weak self] (_, movie, cell) in
+                self?.setupCell(cell, movie: movie)
             }
             .disposed(by: disposeBag)
         
         tableView.rx.modelSelected(Movie.self)
             .subscribe(onNext: {
-                print($0)
-                print($0.id)
+                let movieDetailVC = self.storyboard?.instantiateViewController(withIdentifier: "DetailVC") as! MovieDetailViewController
+                movieDetailVC.id = $0.id
+                self.navigationController?.pushViewController(movieDetailVC, animated: true)
+                
             })
             .disposed(by: disposeBag)
-            
+    }
+    
+    private func setupCell(_ cell: MoviesPlayingTableViewCell, movie: Movie) {
+        cell.selectionStyle = .none
+        cell.setTitle(movie.title ?? "")
+        cell.setOverview(movie.overview ?? "")
+        cell.setReleaseDate(movie.release_date ?? "")
     }
 }
 
