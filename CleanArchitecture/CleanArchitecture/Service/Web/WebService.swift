@@ -20,7 +20,7 @@ enum WebError: Error {
 class WebService {
     typealias completion<T> = (T?, WebError?) -> ()    
 
-    func fetchMoviesPlaying(page: Int, completion: @escaping completion<[Movie]>) {
+    func fetchMoviesPlaying(page: Int, completion: @escaping completion<[MyMovie]>) {
         let url = composeMoviesPlayingUrlRequest(page: page)
         
         AF.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil, interceptor: nil).responseDecodable(of: MovieResponse.self) { response in
@@ -35,10 +35,10 @@ class WebService {
         }
     }
     
-    func fetchMovieDetail(id: Int, completion: @escaping completion<[Movie]>) {
+    func fetchMovieDetail(id: Int, completion: @escaping completion<[MyMovie]>) {
         let url = composeMovieDetailUrlRequest(id: id)
         
-        AF.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil, interceptor: nil).responseDecodable(of: Movie.self) { response in
+        AF.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil, interceptor: nil).responseDecodable(of: MyMovie.self) { response in
             guard response.error == nil else {
                 print("Failed request from themoviedb: \(response.error!.localizedDescription)")
                 completion(nil, .failedRequest)
