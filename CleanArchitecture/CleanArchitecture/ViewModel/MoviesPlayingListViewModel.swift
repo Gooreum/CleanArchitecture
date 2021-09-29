@@ -18,37 +18,21 @@ class MoviesPlayingListViewModel {
         self.webService = WebService()
     }
     
-    func convertMoviesPlayingDataAsStream(page: Int)-> Observable<[Movie]> {
-        return Observable.create { observer in
-
+    func convertMoviesPlayingDataAsStream(page: Int)-> Single<[MyMovie]> {
+        return Single.create { observer in
             self.webService.fetchMoviesPlaying(page: page) { (movies, error) in
                 if let error = error {
                     print("Failed request from themoviedb: \(error.localizedDescription)")
-                    observer.onError(WebError.failedRequest)
+                    observer(.failure(WebError.failedRequest))
                 }
+                
                 if let movies = movies {
-                    print(movies)
-                    observer.onNext(movies)
+                    observer(.success(movies))
+                }else {
+                    observer(.failure(WebError.invalidData))
                 }
-                observer.onCompleted()
             }
             return Disposables.create()
         }
     }
-//    var moviePlayingList: Observable<[Movie]> {
-//        return storage.playingMovieList(page: 1)
-//    }
-    
-    //클로저 내부에서 셀프로 접근해야 되기 때문에 lazy로 선언
-//    lazy var detailAction: Action<Movie, Void> = {
-//        return Action { movie in
-//            //디테일 뷰 모델 생성
-//            let movieViewModel = MovieViewModel(movie: movie, sceneCoordinator: self.sceneCoordinator, storage: self.storage)
-//
-//            //Scene 생성
-//            let movieDetailScene = Scene.movieDetail(movieViewModel)
-//
-//            return self.sceneCoordinator.transition(to: movieDetailScene, using: .push, animated: true).asObservable().map { _ in }
-//        }
-//    }()    
 }
