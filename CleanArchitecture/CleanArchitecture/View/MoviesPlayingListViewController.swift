@@ -8,7 +8,6 @@
 import UIKit
 import RxSwift
 import RxCocoa
-import CoreData
 
 class MoviesPlayingListViewController: UIViewController {
     
