@@ -8,12 +8,13 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import CoreData
 
 class MoviesPlayingListViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     
-    private let viewModel = MoviesPlayingListViewModel()
+    private let viewModel = MoviesPlayingListViewModel()    
     private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
@@ -23,22 +24,23 @@ class MoviesPlayingListViewController: UIViewController {
     
     func setUpBindings() {
         viewModel.convertMoviesPlayingDataAsStream(page: 1)
+            .asObservable()
             .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: MoviesPlayingTableViewCell.self)) { [weak self] (_, movie, cell) in
                 self?.setupCell(cell, movie: movie)
             }
             .disposed(by: disposeBag)
         
-        tableView.rx.modelSelected(Movie.self)
+        tableView.rx.modelSelected(MyMovie.self)
             .subscribe(onNext: {
-                let movieDetailVC = self.storyboard?.instantiateViewController(withIdentifier: "DetailVC") as! MovieDetailViewController
-                movieDetailVC.id = $0.id
+                let movieDetailVC = self.storyboard?.instantiateViewController(withIdentifier: "DetailVC") as! MovieDetailViewController               
+                movieDetailVC.movie = $0
                 self.navigationController?.pushViewController(movieDetailVC, animated: true)
-                
+
             })
             .disposed(by: disposeBag)
     }
     
-    private func setupCell(_ cell: MoviesPlayingTableViewCell, movie: Movie) {
+    private func setupCell(_ cell: MoviesPlayingTableViewCell, movie: MyMovie) {
         cell.selectionStyle = .none
         cell.setTitle(movie.title ?? "")
         cell.setOverview(movie.overview ?? "")
