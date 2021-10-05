@@ -11,18 +11,18 @@ import RxSwift
 protocol MovieStorageType {    
     //영화 추가하기
     @discardableResult
-    func save(movie: MyMovie) -> Observable<MyMovie>    
+    func save(movie: Movie) -> Completable
         
     //내 영화 리스트 가져오기
     @discardableResult
-    func myMovieList() -> Observable<[MyMovie]>
+    func myMovieList() -> Observable<[Movie]>
     
     //비교하기
     @discardableResult
-    func compare(movie: MyMovie) -> Observable<Bool>
+    func compare(movie: Movie) -> Observable<Bool>
     
     //내 영화 삭제하기
     @discardableResult
-    func delete(movie: MyMovie) -> Observable<MyMovie>
+    func delete(movie: Movie) -> Completable
     
 }
