@@ -11,4 +11,7 @@ target 'CleanArchitecture' do
   pod 'RxCocoa'
   pod 'RxCoreData'
   pod 'Action'
+  pod 'RxDataSources'
+  pod 'Swinject'
+  pod 'SwinjectStoryboard'
 end
