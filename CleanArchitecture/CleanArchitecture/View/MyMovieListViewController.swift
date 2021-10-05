@@ -14,7 +14,7 @@ class MyMovieListViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     
-    private let viewModel = MyMovieListViewModel()
+    var viewModel: MyMovieListViewModel?
     private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
@@ -23,28 +23,29 @@ class MyMovieListViewController: UIViewController {
     }
     
     func setUpBindings() {        
-        viewModel.myMovieList
+        viewModel?.myMovieList
             .asObservable()
             .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: MoviesPlayingTableViewCell.self)) { [weak self] (_, movie, cell) in
                 self?.setupCell(cell, movie: movie)
             }
             .disposed(by: disposeBag)
         
-        tableView.rx.modelSelected(MyMovie.self)
+        tableView.rx.modelSelected(Movie.self)
             .subscribe(onNext: {
                 let movieDetailVC = self.storyboard?.instantiateViewController(withIdentifier: "DetailVC") as! MovieDetailViewController
-                movieDetailVC.movie = $0
+                movieDetailVC.movie = $0 as? Movie
                 self.navigationController?.pushViewController(movieDetailVC, animated: true)
                 
             })
             .disposed(by: disposeBag)
     }
     
-    private func setupCell(_ cell: MoviesPlayingTableViewCell, movie: MyMovie) {
+    private func setupCell(_ cell: MoviesPlayingTableViewCell, movie: Movie) {
         cell.selectionStyle = .none
-        cell.setTitle(movie.title ?? "")
-        cell.setOverview(movie.overview ?? "")
-        cell.setReleaseDate(movie.release_date ?? "")
+        cell.setTitle(movie.title)
+        cell.setOverview(movie.overview)        
+        cell.setReleaseDate(movie.release_date)
+       
     }
 }
 

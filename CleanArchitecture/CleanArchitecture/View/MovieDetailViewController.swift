@@ -17,8 +17,8 @@ class MovieDetailViewController: UIViewController {
     @IBOutlet weak var btnSave: UIBarButtonItem!
     
     private let disposeBag = DisposeBag()
-    private var viewModel = MovieViewModel()
-    var movie: MyMovie?
+    var viewModel: MovieViewModel?
+    var movie: Movie?
     
    
     override func viewDidLoad() {
@@ -28,7 +28,7 @@ class MovieDetailViewController: UIViewController {
     
     private func setUpBinding() {
         if let id = self.movie?.id {
-            viewModel.convertMovieDataAsStream(id: id)
+            viewModel?.movieDetail(id: id)
                 .bind(to: tableView.rx.items(cellIdentifier: "MovieDetailCell", cellType: MovieDetailTableViewCell.self)) { [weak self] (_, movie, cell) in
                     self?.setupCell(cell, movie: movie)
                 }
@@ -36,19 +36,19 @@ class MovieDetailViewController: UIViewController {
         }else {
             print("No ID")
         }
-        
+
         if let movie = self.movie {
-            viewModel.checkMovieInStorage(movie: movie)
+            viewModel?.checkMovieInStorage(movie: movie)
                 .subscribe(onNext: {
                     switch $0 {
                     case true :
                         print("TRUE")
-                        self.btnSave.rx.action = self.viewModel.performSave(movie: movie)
-                        self.btnSave.title = "저장"
+                        self.btnSave.rx.action = self.viewModel?.performDelete(movie: movie)
+                        self.btnSave.title = "삭제"
                     case false :
                         print("FALSE")
-                        self.btnSave.rx.action = self.viewModel.performDelete(movie: movie)
-                        self.btnSave.title = "삭제"
+                        self.btnSave.rx.action = self.viewModel?.performSave(movie: movie)
+                        self.btnSave.title = "저장"
                     }
                 })
                 .disposed(by: disposeBag)
@@ -57,15 +57,11 @@ class MovieDetailViewController: UIViewController {
         }
     }
     
-    private func setupCell(_ cell: MovieDetailTableViewCell, movie: MyMovie) {
+    private func setupCell(_ cell: MovieDetailTableViewCell, movie: Movie) {
         cell.selectionStyle = .none
-        cell.setTitle(movie.title ?? "")
-        cell.setOverview(movie.overview ?? "")
-        cell.setReleaseDate(movie.release_date ?? "")
-        cell.setRevenue("\(movie.revenue ?? 0)")
-        cell.setGeneres(movie.genres?[0].name ?? "")
-        cell.setRuntime("\(movie.runtime ?? 0)")
-        cell.setVoteAverage("\(movie.vote_average ?? 0)")
+        cell.setTitle(movie.title)
+        cell.setOverview(movie.overview)
+        cell.setReleaseDate(movie.release_date)
     }
 }
 
