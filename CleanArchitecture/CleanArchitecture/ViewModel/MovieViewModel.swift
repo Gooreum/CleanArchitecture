@@ -9,20 +9,16 @@ import Foundation
 import RxSwift
 import Action
 
-class MovieViewModel {
+class MovieViewModel: CommonViewModel {
     
     private let disposeBag = DisposeBag()
-    private let webService: WebService
-    private let storage: CoreDataStorage
-    
-    init() {
-        self.webService = WebService()
-        self.storage = CoreDataStorage(modelName: "Model")
-    }
-    
-    func convertMovieDataAsStream(id: Int)-> Observable<[MyMovie]> {
+    var webService: WebServiceType?
+    var storage: MovieStorageType?
+        
+    //영화 상세정보 가져오기
+    func movieDetail(id: Int) -> Observable<[Movie]>{
         return Observable.create { observer in
-            self.webService.fetchMovieDetail(id: id) { (movie, error) in
+            self.webService?.fetchMovieDetail(id: id) { (movie, error) in
                 if let error = error {
                     print("Failed request from themoviedb: \(error.localizedDescription)")
                     observer.onError(WebError.failedRequest)
@@ -33,30 +29,35 @@ class MovieViewModel {
                 }else {
                     observer.onError(WebError.invalidData)
                 }
-                
                 observer.onCompleted()
             }
             return Disposables.create()
         }
     }
-            
-    func performSave(movie: MyMovie) -> CocoaAction {
+    
+    //영화 저장
+    func performSave(movie: Movie) -> CocoaAction {
         return Action { input in
-            self.storage.save(movie: movie)
+            self.storage?.save(movie: movie)
             return Observable.empty()
         }
     }
     
-    func performDelete(movie: MyMovie) -> CocoaAction {
+    //영화 삭제
+    func performDelete(movie: Movie) -> CocoaAction {
         return Action { input in
-            self.storage.delete(movie: movie)
+            self.storage?.delete(movie: movie)
             return Observable.empty()
         }
     }
     
     //영화 ID값을 비교해서 CoreData에 있으면 true, 없으면 false를 반환
     //true이면 삭제버튼이 되도록, false이면 저장 버튼이 되도록 처리하기 위한 목적
-    func checkMovieInStorage(movie: MyMovie) -> Observable<Bool> {
-        return self.storage.compare(movie: movie)
+    func checkMovieInStorage(movie: Movie) -> Observable<Bool> {
+        if let storage = self.storage {
+            return storage.compare(movie: movie)
+        }else {
+            fatalError()
+        }
     }
 }

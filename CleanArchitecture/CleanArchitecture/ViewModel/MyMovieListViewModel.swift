@@ -11,16 +11,18 @@ import RxSwift
 import Action
 import CoreData
 
-class MyMovieListViewModel {
+class MyMovieListViewModel: CommonViewModel {
+        
+    var webService: WebServiceType?
+    var storage: MovieStorageType?
     
-    let storage: CoreDataStorage
     
-    init() {
-        self.storage = CoreDataStorage(modelName: "Model")
-    }
-    
-    var myMovieList: Observable<[MyMovie]> {
-        self.storage.myMovieList()
+    var myMovieList: Observable<[Movie]> {
+        if let storage = self.storage {
+            return storage.myMovieList()
+        }else {
+            fatalError()
+        }
     }
 }
 
