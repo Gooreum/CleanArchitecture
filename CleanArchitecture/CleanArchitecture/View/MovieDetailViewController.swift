@@ -13,8 +13,8 @@ import CoreData
 class MovieDetailViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var btnSave: UIButton!
-    @IBOutlet weak var btnDelete: UIButton!
+    @IBOutlet weak var btnSave: UIBarButtonItem!
+    @IBOutlet weak var btnDelete: UIBarButtonItem!
     
     private let disposeBag = DisposeBag()
     var viewModel: MovieViewModel?

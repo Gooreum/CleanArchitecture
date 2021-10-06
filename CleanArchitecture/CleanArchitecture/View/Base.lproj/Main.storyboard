@@ -178,14 +178,23 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Yww-iL-fJA">
-                        <barButtonItem key="rightBarButtonItem" title="저장" id="3rz-3d-okN">
-                            <connections>
-                                <action selector="btnSave:" destination="omP-Hf-onj" id="LDx-nv-Mgr"/>
-                            </connections>
-                        </barButtonItem>
+                        <nil key="title"/>
+                        <rightBarButtonItems>
+                            <barButtonItem title="삭제" id="uM5-eT-c5u">
+                                <connections>
+                                    <action selector="btnDelete:" destination="omP-Hf-onj" id="VUx-bY-5s1"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="저장" id="6o4-wa-s2T">
+                                <connections>
+                                    <action selector="btnSave:" destination="omP-Hf-onj" id="Vdo-HF-HxE"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <connections>
-                        <outlet property="btnSave" destination="3rz-3d-okN" id="k4J-hJ-oNC"/>
+                        <outlet property="btnDelete" destination="uM5-eT-c5u" id="7Hx-fS-S19"/>
+                        <outlet property="btnSave" destination="6o4-wa-s2T" id="esA-jM-PAn"/>
                         <outlet property="tableView" destination="j6M-AQ-jRe" id="wQ2-9f-Gdo"/>
                     </connections>
                 </viewController>
@@ -284,9 +293,7 @@
                             <constraint firstItem="FTY-yM-CJM" firstAttribute="leading" secondItem="xLy-JL-nyi" secondAttribute="leading" id="Kpa-xO-JCg"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="내 영화 모음" id="7tX-Nm-Kjw">
-                        <barButtonItem key="rightBarButtonItem" systemItem="bookmarks" id="rAN-FU-3so"/>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="내 영화 모음" id="7tX-Nm-Kjw"/>
                     <connections>
                         <outlet property="tableView" destination="FTY-yM-CJM" id="bgr-mb-cLn"/>
                     </connections>
