@@ -12,52 +12,89 @@ import Action
 class MovieViewModel: CommonViewModel {
     
     private let disposeBag = DisposeBag()
+    
     var webService: WebServiceType?
     var storage: MovieStorageType?
-        
-    //영화 상세정보 가져오기
-    func movieDetail(id: Int) -> Observable<[Movie]>{
-        return Observable.create { observer in
-            self.webService?.fetchMovieDetail(id: id) { (movie, error) in
-                if let error = error {
-                    print("Failed request from themoviedb: \(error.localizedDescription)")
-                    observer.onError(WebError.failedRequest)
-                }
-                
-                if let movie = movie {
-                    observer.onNext(movie)
-                }else {
-                    observer.onError(WebError.invalidData)
-                }
-                observer.onCompleted()
+    
+    var buttonEnabled = BehaviorSubject<Bool>(value: false)
+    var movieSubject = BehaviorSubject<[Movie]>(value: [Movie]())
+    
+    //영화상세정보 가져오기
+    func fetchMovieDetail(id: Int) {
+        self.webService?.fetchMovieDetail(id: id) { [weak self] (movie, error) in
+            if let error = error {
+                print("Failed request from themoviedb: \(error.localizedDescription)")
+                self?.movieSubject.onError(WebError.failedRequest)
             }
-            return Disposables.create()
+            if let movie = movie {
+                self?.movieSubject.onNext(movie)
+                self?.movieSubject.onCompleted()
+            }else {
+                self?.movieSubject.onError(WebError.invalidData)
+            }
         }
     }
     
     //영화 저장
-    func performSave(movie: Movie) -> CocoaAction {
-        return Action { input in
-            self.storage?.save(movie: movie)
-            return Observable.empty()
+    func saveMovie(movie: Movie) {
+        storage?.save(movie: movie)
+            .do(onNext: {print($0)})
+            .subscribe(onNext: { [weak self] in
+                self?.buttonEnabled.onNext($0)
+                
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    //영화 조회
+    func checkMovieInStorage(movie: Movie) {
+        guard let storage = self.storage else {
+            return
         }
+        storage.checkMovieInStore(movie: movie)
+            .do(onNext: {print($0)})
+            .subscribe(onNext: { [weak self] in
+                self?.buttonEnabled.onNext($0)
+            })
+            .disposed(by: disposeBag)
     }
     
     //영화 삭제
-    func performDelete(movie: Movie) -> CocoaAction {
-        return Action { input in
-            self.storage?.delete(movie: movie)
-            return Observable.empty()
-        }
+    func deleteMovie(movie: Movie) {
+        storage?.delete(movie: movie)
+            .do(onNext: {print($0)})
+            .subscribe(onNext: { [weak self] in
+                self?.buttonEnabled.onNext($0)
+            })
+            .disposed(by: disposeBag)
     }
     
-    //영화 ID값을 비교해서 CoreData에 있으면 true, 없으면 false를 반환
-    //true이면 삭제버튼이 되도록, false이면 저장 버튼이 되도록 처리하기 위한 목적
-    func checkMovieInStorage(movie: Movie) -> Observable<Bool> {
-        if let storage = self.storage {
-            return storage.compare(movie: movie)
-        }else {
-            fatalError()
-        }
-    }
+    
+    /*
+     func performSave(movie: Movie) -> CocoaAction {
+     return Action { [weak self] in
+     self?.storage?.save(movie: movie)
+     .do(onNext: {print($0)})
+     .subscribe(onNext: { [weak self] in
+     self?.buttonEnabled.onNext($0)
+     })
+     .disposed(by: self!.disposeBag)
+     return Observable.empty()
+     }
+     }
+     
+     //영화 삭제
+     func performDelete(movie: Movie) -> CocoaAction {
+     return Action { [weak self] in
+     self?.storage?.delete(movie: movie)
+     .do(onNext: {print($0)})
+     .subscribe(onNext: { [weak self] in
+     self?.buttonEnabled.onNext($0)
+     })
+     .disposed(by: self!.disposeBag)
+     return Observable.empty()
+     }
+     }
+     */
 }
+
