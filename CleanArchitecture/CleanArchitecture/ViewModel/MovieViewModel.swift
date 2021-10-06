@@ -19,6 +19,7 @@ class MovieViewModel: CommonViewModel {
     var buttonEnabled = BehaviorSubject<Bool>(value: false)
     var movieSubject = BehaviorSubject<[Movie]>(value: [Movie]())
     
+    
     //영화상세정보 가져오기
     func fetchMovieDetail(id: Int) {
         self.webService?.fetchMovieDetail(id: id) { [weak self] (movie, error) in

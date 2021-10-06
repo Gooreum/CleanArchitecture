@@ -26,4 +26,8 @@ class MovieDetailTableViewCell: UITableViewCell {
         labelOverview.text = overview
     }
     
+    func setImage(_ url: URL) {
+        imageMovie.af.setImage(withURL: url)
+    }
+    
 }

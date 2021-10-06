@@ -12,17 +12,43 @@ import Action
 import CoreData
 
 class MyMovieListViewModel: CommonViewModel {
-        
+    
+    
     var webService: WebServiceType?
-    var storage: MovieStorageType?
+    var storage: MovieStorageType? {
+        didSet {
+            fetchMyMoveList()
+        }
+    }
     
+    private let disposeBag = DisposeBag()
+    var myMoveListSubject = BehaviorSubject<[Movie]>(value: [Movie]())
     
-    var myMovieList: Observable<[Movie]> {
+    func fetchMyMoveList() {
         if let storage = self.storage {
-            return storage.myMovieList()
+            storage.myMovieList()
+                .subscribe(onNext: { [weak self] in
+                    self?.myMoveListSubject.onNext($0)
+                })
+                .disposed(by: disposeBag)
+           
         }else {
             fatalError()
         }
     }
+    
+//    var myMovieList: Observable<[Movie]> {
+//        if let storage = self.storage {
+//            storage.myMovieList()
+//                .subscribe(onNext: { [weak self] in
+//                    self?.myMoveListSubject.onNext($0)
+//                })
+//                .disposed(by: disposeBag)
+//
+//        }else {
+//            fatalError()
+//        }
+//    }
 }
+
 

@@ -9,7 +9,7 @@ import UIKit
 
 class MoviesPlayingTableViewCell: UITableViewCell {
     
-    //@IBOutlet weak var imageMovie: UIImageView!
+    @IBOutlet weak var imageMovie: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelReleaseDate: UILabel!
     @IBOutlet weak var labelOverview: UILabel!
@@ -24,5 +24,9 @@ class MoviesPlayingTableViewCell: UITableViewCell {
     
     func setOverview(_ overview: String) {
         labelOverview.text = overview
+    }
+    
+    func setImage(_ url: URL) {
+        imageMovie.af.setImage(withURL: url)
     }
 }

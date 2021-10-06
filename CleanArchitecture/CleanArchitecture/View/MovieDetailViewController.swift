@@ -58,7 +58,7 @@ class MovieDetailViewController: UIViewController {
                 self.setupCell(cell, movie: movie)
             }
             .disposed(by: disposeBag)
-  
+        
     }
     
     private func setupCell(_ cell: MovieDetailTableViewCell, movie: Movie) {
@@ -66,8 +66,8 @@ class MovieDetailViewController: UIViewController {
         cell.setTitle(movie.title)
         cell.setOverview(movie.overview)
         cell.setReleaseDate(movie.release_date)
+        cell.setImage(composeMovieImageUrlRequest(posterPath: movie.poster_path ?? ""))
     }
-    
     
     @IBAction func btnDelete(_ sender: Any) {
         if let movie = self.movie {
