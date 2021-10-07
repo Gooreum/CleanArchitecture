@@ -13,7 +13,7 @@ import RxSwift
 protocol MovieStorageType {    
     //영화 추가하기
     @discardableResult
-    func save(movie: Movie) -> Observable<Bool>
+    func save(movie: Movie) -> Completable
         
     //내 영화 리스트 가져오기
     @discardableResult
@@ -25,7 +25,5 @@ protocol MovieStorageType {
     
     //내 영화 삭제하기
     @discardableResult
-    func delete(movie: Movie) -> Observable<Bool>
-    
-    
+    func delete(movie: Movie) -> Completable
 }

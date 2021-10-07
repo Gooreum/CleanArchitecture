@@ -17,8 +17,15 @@ class MovieViewModel: CommonViewModel {
     var storage: MovieStorageType?
     
     var buttonEnabled = BehaviorSubject<Bool>(value: false)
-    var movieSubject = BehaviorSubject<[Movie]>(value: [Movie]())
+    //var movieSubject = BehaviorSubject<[Movie]>(value: [Movie]())
+    var movieSubject = PublishSubject<[Movie]>()
+        
+    init() {}
     
+    init(webService: WebServiceType, storage: MovieStorageType) {
+        self.webService = webService
+        self.storage = storage
+    }
     
     //영화상세정보 가져오기
     func fetchMovieDetail(id: Int) {
@@ -39,10 +46,9 @@ class MovieViewModel: CommonViewModel {
     //영화 저장
     func saveMovie(movie: Movie) {
         storage?.save(movie: movie)
-            .do(onNext: {print($0)})
-            .subscribe(onNext: { [weak self] in
-                self?.buttonEnabled.onNext($0)
-                
+            .debug()
+            .subscribe(onCompleted: { [weak self] in
+                self?.buttonEnabled.onNext(true)
             })
             .disposed(by: disposeBag)
     }
@@ -63,39 +69,11 @@ class MovieViewModel: CommonViewModel {
     //영화 삭제
     func deleteMovie(movie: Movie) {
         storage?.delete(movie: movie)
-            .do(onNext: {print($0)})
-            .subscribe(onNext: { [weak self] in
-                self?.buttonEnabled.onNext($0)
+            //.do(onNext: {print($0)})
+            .subscribe(onCompleted: { [weak self] in
+                self?.buttonEnabled.onNext(false)
             })
             .disposed(by: disposeBag)
     }
-    
-    
-    /*
-     func performSave(movie: Movie) -> CocoaAction {
-     return Action { [weak self] in
-     self?.storage?.save(movie: movie)
-     .do(onNext: {print($0)})
-     .subscribe(onNext: { [weak self] in
-     self?.buttonEnabled.onNext($0)
-     })
-     .disposed(by: self!.disposeBag)
-     return Observable.empty()
-     }
-     }
-     
-     //영화 삭제
-     func performDelete(movie: Movie) -> CocoaAction {
-     return Action { [weak self] in
-     self?.storage?.delete(movie: movie)
-     .do(onNext: {print($0)})
-     .subscribe(onNext: { [weak self] in
-     self?.buttonEnabled.onNext($0)
-     })
-     .disposed(by: self!.disposeBag)
-     return Observable.empty()
-     }
-     }
-     */
 }
 

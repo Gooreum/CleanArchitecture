@@ -36,14 +36,16 @@ class MovieStorageImpl: MovieStorageType {
     }
     
     @discardableResult
-    func save(movie: Movie) -> Observable<Bool> {
+    func save(movie: Movie) -> Completable {
         do {
             _ = try mainContext.rx.update(movie)
             print("Movie has been saved : returns true")
-            return Observable.of(true)
+            return Completable.empty()
+            //return Observable.of(true)
         }catch {
             print("Movie has not been saved")
-            return Observable.error(error)
+            return Completable.error(error)
+            //return Observable.error(error)
         }
     }
     
@@ -78,14 +80,15 @@ class MovieStorageImpl: MovieStorageType {
     //delete -> 로컬DB에 없으니까 false던져줌.
     
     @discardableResult
-    func delete(movie: Movie) -> Observable<Bool> {
+    func delete(movie: Movie) -> Completable {
         do {
             try mainContext.rx.delete(movie)
             print("Movie has been deleted : returns true")
-            return Observable.of(false)
+            //return Observable.of(false)
+            return Completable.empty()
         } catch {
             print("Deleting movie has an error..")
-            return Observable.error(error)
+            return Completable.error(error)
         }
     }
 }
