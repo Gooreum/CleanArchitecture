@@ -14,6 +14,7 @@ import CoreData
 class MyMovieListViewModel: CommonViewModel {
     
     
+    private let disposeBag = DisposeBag()
     var webService: WebServiceType?
     var storage: MovieStorageType? {
         didSet {
@@ -21,7 +22,6 @@ class MyMovieListViewModel: CommonViewModel {
         }
     }
     
-    private let disposeBag = DisposeBag()
     var myMoveListSubject = BehaviorSubject<[Movie]>(value: [Movie]())
     
     func fetchMyMoveList() {

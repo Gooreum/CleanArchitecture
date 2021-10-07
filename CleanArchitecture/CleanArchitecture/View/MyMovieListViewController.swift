@@ -26,6 +26,7 @@ class MyMovieListViewController: UIViewController {
         super.viewWillAppear(animated)
         
         //영화상세에서 로컬에 저장된 영화 삭제가 되면 새롭게 myMovieList를 불러오고 싶은데.. 어떻게 해야될지 모르겠음..
+        //MARK: TODO - 상세화면에서 삭제작업이 이루어지면 옵저버 패턴이나 노티 해줄 수 있는 기능을 만들어서 구현해보자. 그치만 이 로직도 크게 문제는 없음.
         viewModel?.fetchMyMoveList()
     }
     
