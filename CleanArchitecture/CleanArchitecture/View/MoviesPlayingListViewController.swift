@@ -25,34 +25,37 @@ class MoviesPlayingListViewController: UIViewController {
     
     func setUpBindings() {
                 
-        let reload = tableView.refreshControl?.rx
-            .controlEvent(.valueChanged)
-            .map { _ in () } ?? Observable.just(())
+//        let reload = tableView.refreshControl?.rx
+//            .controlEvent(.valueChanged)
+//            .map { _ in () } ?? Observable.just(())
+//
+//        Observable.merge(reload)
+//            .bind(to: viewModel!.fetchMovies)
+//            .disposed(by: disposeBag)
         
-        Observable.merge(reload)
-            .bind(to: viewModel!.fetchMovies)
+        tableView.refreshControl?.rx
+            .controlEvent(.valueChanged)
+            .startWith(())
+            .bind(to: viewModel!.fetching)
             .disposed(by: disposeBag)
         
         viewModel?.moviesSubject
+            .debug()
             .subscribe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
             .observe(on: MainScheduler.instance)
             .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: MoviesPlayingTableViewCell.self)) { [weak self] (_, movie, cell) in
                 self?.setupCell(cell, movie: movie)
             }
             .disposed(by: disposeBag)
-        
-        
+                
         viewModel?.activated
             //.map{ !$0 }
             .debug()
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { finished in                
+            .subscribe(onNext: { finished in
                 self.tableView.refreshControl?.endRefreshing()
-                
             })
-                
-        
-        .disposed(by: disposeBag)
+            .disposed(by: disposeBag)
         
         tableView.rx.modelSelected(Movie.self)
             .subscribe(onNext: {
