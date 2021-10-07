@@ -16,39 +16,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let container = Container()
         
         container.register(WebServiceType.self) { _ in WebServiceImpl() }
+        container.register(NetworkState.self) { _ in NetworkState() }
         container.register(MovieStorageType.self) { _ in MovieStorageImpl(modelName: "Model") }
         
-        //ViewModel
-        container.register(CommonViewModel.self, name: "MoviesPlayingListViewModel") { r in
-            let viewModel = MoviesPlayingListViewModel()            
-            viewModel.webService = r.resolve(WebServiceType.self)
-            viewModel.storage = r.resolve(MovieStorageType.self)
-            return viewModel
-        }
-        container.register(CommonViewModel.self, name: "MovieViewModel") { r in
-            let viewModel = MovieViewModel()
-            viewModel.webService = r.resolve(WebServiceType.self)
-            viewModel.storage = r.resolve(MovieStorageType.self)
+        container.register(MoviesPlayingListViewModel.self, name: "MoviesPlayingListViewModel") { r in
+            let viewModel = MoviesPlayingListViewModel(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!, networkStateUtil: r.resolve(NetworkState.self)!)
             return viewModel
         }
         
-        container.register(CommonViewModel.self, name: "MyMovieListViewModel") { r in
-            let viewModel = MyMovieListViewModel()
-            viewModel.webService = r.resolve(WebServiceType.self)
-            viewModel.storage = r.resolve(MovieStorageType.self)
+        container.register(MovieViewModel.self, name: "MovieViewModel") { r in
+            let viewModel = MovieViewModel(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!)
+            return viewModel
+        }
+        
+        container.register(MyMovieListViewModel.self, name: "MyMovieListViewModel") { r in
+            let viewModel = MyMovieListViewModel(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!)
             return viewModel
         }
                 
         container.storyboardInitCompleted(MoviesPlayingListViewController.self) { r, c in
-            c.viewModel = r.resolve(CommonViewModel.self, name: "MoviesPlayingListViewModel") as! MoviesPlayingListViewModel
+            c.viewModel = r.resolve(MoviesPlayingListViewModel.self, name: "MoviesPlayingListViewModel")
         }
         
         container.storyboardInitCompleted(MovieDetailViewController.self) { r, c in
-            c.viewModel = r.resolve(CommonViewModel.self, name: "MovieViewModel") as? MovieViewModel
+            c.viewModel = r.resolve(MovieViewModel.self, name: "MovieViewModel")
         }
         
         container.storyboardInitCompleted(MyMovieListViewController.self) { r, c in
-            c.viewModel = r.resolve(CommonViewModel.self, name: "MyMovieListViewModel") as? MyMovieListViewModel
+            c.viewModel = r.resolve(MyMovieListViewModel.self, name: "MyMovieListViewModel")
+            
         }
         return container
     }()

@@ -9,18 +9,17 @@ import Foundation
 import RxSwift
 import Action
 
-class MovieViewModel: CommonViewModel {
+class MovieViewModel {
     
     private let disposeBag = DisposeBag()
     
-    var webService: WebServiceType?
-    var storage: MovieStorageType?
+    var webService: WebServiceType
+    var storage: MovieStorageType
     
     var buttonEnabled = BehaviorSubject<Bool>(value: false)
     //var movieSubject = BehaviorSubject<[Movie]>(value: [Movie]())
     var movieSubject = PublishSubject<[Movie]>()
-        
-    init() {}
+    
     
     init(webService: WebServiceType, storage: MovieStorageType) {
         self.webService = webService
@@ -29,7 +28,7 @@ class MovieViewModel: CommonViewModel {
     
     //영화상세정보 가져오기
     func fetchMovieDetail(id: Int) {
-        self.webService?.fetchMovieDetail(id: id) { [weak self] (movie, error) in
+        self.webService.fetchMovieDetail(id: id) { [weak self] (movie, error) in
             if let error = error {
                 print("Failed request from themoviedb: \(error.localizedDescription)")
                 self?.movieSubject.onError(WebError.failedRequest)
@@ -45,7 +44,7 @@ class MovieViewModel: CommonViewModel {
     
     //영화 저장
     func saveMovie(movie: Movie) {
-        storage?.save(movie: movie)
+        storage.save(movie: movie)
             .debug()
             .subscribe(onCompleted: { [weak self] in
                 self?.buttonEnabled.onNext(true)
@@ -55,9 +54,6 @@ class MovieViewModel: CommonViewModel {
     
     //영화 조회
     func checkMovieInStorage(movie: Movie) {
-        guard let storage = self.storage else {
-            return
-        }
         storage.checkMovieInStore(movie: movie)
             .do(onNext: {print($0)})
             .subscribe(onNext: { [weak self] in
@@ -68,7 +64,7 @@ class MovieViewModel: CommonViewModel {
     
     //영화 삭제
     func deleteMovie(movie: Movie) {
-        storage?.delete(movie: movie)
+        storage.delete(movie: movie)
             //.do(onNext: {print($0)})
             .subscribe(onCompleted: { [weak self] in
                 self?.buttonEnabled.onNext(false)

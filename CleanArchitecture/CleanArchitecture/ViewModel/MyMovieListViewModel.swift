@@ -11,29 +11,29 @@ import RxSwift
 import Action
 import CoreData
 
-class MyMovieListViewModel: CommonViewModel {
+class MyMovieListViewModel {
     
     
     private let disposeBag = DisposeBag()
-    var webService: WebServiceType?
-    var storage: MovieStorageType? {
-        didSet {
-            fetchMyMoveList()
-        }
+    var webService: WebServiceType
+    var storage: MovieStorageType
+    
+    init(webService: WebServiceType, storage: MovieStorageType) {
+        self.webService = webService
+        self.storage = storage
+        
+        fetchMyMoveList()
     }
     
     var myMoveListSubject = BehaviorSubject<[Movie]>(value: [Movie]())
     
     func fetchMyMoveList() {
-        if let storage = self.storage {
-            storage.myMovieList()
-                .subscribe(onNext: { [weak self] in
-                    self?.myMoveListSubject.onNext($0)
-                })
-                .disposed(by: disposeBag)
-        }else {
-            fatalError()
-        }
+        storage.myMovieList()
+            .subscribe(onNext: { [weak self] in
+                self?.myMoveListSubject.onNext($0)
+            })
+            .disposed(by: disposeBag)
+        
     }
 }
 
