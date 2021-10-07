@@ -31,24 +31,10 @@ class MyMovieListViewModel: CommonViewModel {
                     self?.myMoveListSubject.onNext($0)
                 })
                 .disposed(by: disposeBag)
-           
         }else {
             fatalError()
         }
     }
-    
-//    var myMovieList: Observable<[Movie]> {
-//        if let storage = self.storage {
-//            storage.myMovieList()
-//                .subscribe(onNext: { [weak self] in
-//                    self?.myMoveListSubject.onNext($0)
-//                })
-//                .disposed(by: disposeBag)
-//
-//        }else {
-//            fatalError()
-//        }
-//    }
 }
 
 
