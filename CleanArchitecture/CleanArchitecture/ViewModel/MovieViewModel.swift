@@ -15,29 +15,31 @@ class MovieViewModel {
     
     var webService: WebServiceType
     var storage: MovieStorageType
+    var networkStateUtil: NetworkState
     
     var buttonEnabled = BehaviorSubject<Bool>(value: false)
-    //var movieSubject = BehaviorSubject<[Movie]>(value: [Movie]())
     var movieSubject = PublishSubject<[Movie]>()
     
-    
-    init(webService: WebServiceType, storage: MovieStorageType) {
+    init(webService: WebServiceType, storage: MovieStorageType, networkStateUtil: NetworkState) {
         self.webService = webService
         self.storage = storage
+        self.networkStateUtil = networkStateUtil
     }
     
     //영화상세정보 가져오기
     func fetchMovieDetail(id: Int) {
-        self.webService.fetchMovieDetail(id: id) { [weak self] (movie, error) in
-            if let error = error {
-                print("Failed request from themoviedb: \(error.localizedDescription)")
-                self?.movieSubject.onError(WebError.failedRequest)
-            }
-            if let movie = movie {
-                self?.movieSubject.onNext(movie)
-                self?.movieSubject.onCompleted()
-            }else {
-                self?.movieSubject.onError(WebError.invalidData)
+        if self.networkStateUtil.monitorReachability() == true {
+            self.webService.fetchMovieDetail(id: id) { [weak self] (movie, error) in
+                if let error = error {
+                    print("Failed request from themoviedb: \(error.localizedDescription)")
+                    self?.movieSubject.onError(WebError.failedRequest)
+                }
+                if let movie = movie {
+                    self?.movieSubject.onNext(movie)
+                    self?.movieSubject.onCompleted()
+                }else {
+                    self?.movieSubject.onError(WebError.invalidData)
+                }
             }
         }
     }
