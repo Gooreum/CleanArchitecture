@@ -26,13 +26,15 @@ struct Movie: Decodable {
     let overview: String
     let release_date: String
     let title: String
+    var poster_path: String? = ""
         
-    init(id: Int, title: String, releaseDate: String, overview: String){
-        self.id = id
-        self.title = title
-        self.release_date = releaseDate
-        self.overview = overview
-    }
+//    init(id: Int, title: String, releaseDate: String, overview: String, poster_path: String){
+//        self.id = id
+//        self.title = title
+//        self.release_date = releaseDate
+//        self.overview = overview
+//        self.poster_path = poster_path
+//    }
 }
 
 extension Movie : Equatable {
@@ -64,6 +66,7 @@ extension Movie : Persistable {
         release_date = entity.value(forKey: "release_date") as! String
         overview = entity.value(forKey: "overview") as! String
         title = entity.value(forKey: "title") as! String
+        poster_path = entity.value(forKey: "poster_path") as? String
     }
     
     func update(_ entity: T) {
@@ -71,6 +74,7 @@ extension Movie : Persistable {
         entity.setValue(release_date, forKey: "release_date")
         entity.setValue(overview, forKey: "overview")
         entity.setValue(title, forKey: "title")
+        entity.setValue(poster_path, forKey: "poster_path")
         
         do {
             try entity.managedObjectContext?.save()
