@@ -36,12 +36,14 @@ class MovieStorageImpl: MovieStorageType {
     }
     
     @discardableResult
-    func save(movie: Movie) -> Completable {
+    func save(movie: Movie) -> Observable<Bool> {
         do {
             _ = try mainContext.rx.update(movie)
-            return Completable.empty()
+            print("Movie has been saved : returns true")
+            return Observable.of(true)
         }catch {
-            return Completable.error(error)
+            print("Movie has not been saved")
+            return Observable.error(error)
         }
     }
     
@@ -51,7 +53,7 @@ class MovieStorageImpl: MovieStorageType {
     }
     
     @discardableResult
-    func compare(movie: Movie) -> Observable<Bool> {
+    func checkMovieInStore(movie: Movie) -> Observable<Bool> {
         
         let fetchRequest: NSFetchRequest<MovieEntity>
         fetchRequest = MovieEntity.fetchRequest()
@@ -60,23 +62,30 @@ class MovieStorageImpl: MovieStorageType {
         do {
             let objects = try mainContext.fetch(fetchRequest)
             switch objects.isEmpty {
-            case true :                
-                return Observable.just(false)
+            case true :
+                print("Movie is not in storage : returns false")
+                return Observable.of(false)
             case false :
-                return Observable.just(true)
+                print("Movie is in storage : returns true")
+                return Observable.of(true)
             }
         }catch {
             return Observable.error(error)
         }
     }
+        
+    //save -> 로컬DB있으니까 true 던져주고
+    //delete -> 로컬DB에 없으니까 false던져줌.
     
     @discardableResult
-    func delete(movie: Movie) -> Completable {
+    func delete(movie: Movie) -> Observable<Bool> {
         do {
             try mainContext.rx.delete(movie)
-            return Completable.empty()
+            print("Movie has been deleted : returns true")
+            return Observable.of(false)
         } catch {
-            return Completable.error(error)
+            print("Deleting movie has an error..")
+            return Observable.error(error)
         }
     }
 }
