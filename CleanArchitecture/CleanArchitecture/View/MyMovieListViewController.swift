@@ -22,18 +22,27 @@ class MyMovieListViewController: UIViewController {
         setUpBindings()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        //영화상세에서 로컬에 저장된 영화 삭제가 되면 새롭게 myMovieList를 불러오고 싶은데.. 어떻게 해야될지 모르겠음..
+        viewModel?.fetchMyMoveList()
+    }
+    
     func setUpBindings() {        
-        viewModel?.myMovieList
-            .asObservable()
+
+        viewModel?.myMoveListSubject
             .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: MoviesPlayingTableViewCell.self)) { [weak self] (_, movie, cell) in
                 self?.setupCell(cell, movie: movie)
             }
             .disposed(by: disposeBag)
         
         tableView.rx.modelSelected(Movie.self)
+            .subscribe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 let movieDetailVC = self.storyboard?.instantiateViewController(withIdentifier: "DetailVC") as! MovieDetailViewController
-                movieDetailVC.movie = $0 as? Movie
+                movieDetailVC.movie = $0
                 self.navigationController?.pushViewController(movieDetailVC, animated: true)
                 
             })
@@ -45,7 +54,7 @@ class MyMovieListViewController: UIViewController {
         cell.setTitle(movie.title)
         cell.setOverview(movie.overview)        
         cell.setReleaseDate(movie.release_date)
-       
+        cell.setImage(composeMovieImageUrlRequest(posterPath: movie.poster_path ?? ""))
     }
 }
 
