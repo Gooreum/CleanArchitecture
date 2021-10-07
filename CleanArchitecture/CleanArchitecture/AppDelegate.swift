@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         container.register(MovieViewModel.self, name: "MovieViewModel") { r in
-            let viewModel = MovieViewModel(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!)
+            let viewModel = MovieViewModel(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!, networkStateUtil: r.resolve(NetworkState.self)!)
             return viewModel
         }
         
