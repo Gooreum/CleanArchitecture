@@ -13,10 +13,11 @@ class MoviesPlayingListViewController: UIViewController {
     
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     private let disposeBag = DisposeBag()
     var viewModel: MoviesPlayingListViewModel?
-  
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.refreshControl = UIRefreshControl()
@@ -24,21 +25,37 @@ class MoviesPlayingListViewController: UIViewController {
     }
     
     func setUpBindings() {
-                
-//        let reload = tableView.refreshControl?.rx
-//            .controlEvent(.valueChanged)
-//            .map { _ in () } ?? Observable.just(())
-//
-//        Observable.merge(reload)
-//            .bind(to: viewModel!.fetchMovies)
-//            .disposed(by: disposeBag)
-        
+        //새로고침
         tableView.refreshControl?.rx
             .controlEvent(.valueChanged)
+            .debug()
             .startWith(())
-            .bind(to: viewModel!.fetching)
+            .bind(to: viewModel!.refreshingfetching)
+            .disposed(by: disposeBag)
+                
+        viewModel?.refreshingActivated
+            .debug()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { finished in
+                self.tableView.refreshControl?.endRefreshing()
+            })
             .disposed(by: disposeBag)
         
+        //페이징
+        viewModel?.paginationActivated
+            .debug()
+            .map { !$0 }
+            .observe(on: MainScheduler.instance)
+            .bind(to: self.activityIndicator.rx.isHidden)
+            .disposed(by: disposeBag)
+        
+        tableView.rx.reachedBottom()
+            .debug()
+            .skip(1)
+            .bind(to: viewModel!.paginationfetching)
+            .disposed(by: disposeBag)
+        
+        //테이블뷰 데이터 바인딩
         viewModel?.moviesSubject
             .debug()
             .subscribe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
@@ -47,23 +64,15 @@ class MoviesPlayingListViewController: UIViewController {
                 self?.setupCell(cell, movie: movie)
             }
             .disposed(by: disposeBag)
-                
-        viewModel?.activated
-            //.map{ !$0 }
-            .debug()
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { finished in
-                self.tableView.refreshControl?.endRefreshing()
-            })
-            .disposed(by: disposeBag)
         
+        //테이블뷰 클릭 이벤트
         tableView.rx.modelSelected(Movie.self)
             .subscribe(onNext: {
-                let movieDetailVC = self.storyboard?.instantiateViewController(withIdentifier: "DetailVC") as! MovieDetailViewController               
+                let movieDetailVC = self.storyboard?.instantiateViewController(withIdentifier: "DetailVC") as! MovieDetailViewController
                 movieDetailVC.movie = $0
                 self.navigationController?.pushViewController(movieDetailVC, animated: true)
             })
-            .disposed(by: disposeBag)
+            .disposed(by: disposeBag)        
     }
     
     private func setupCell(_ cell: MoviesPlayingTableViewCell, movie: Movie) {
