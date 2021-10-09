@@ -13,7 +13,6 @@ class MoviesPlayingListViewController: UIViewController {
     
     
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     private let disposeBag = DisposeBag()
     var viewModel: MoviesPlayingListViewModel?
@@ -22,6 +21,7 @@ class MoviesPlayingListViewController: UIViewController {
         super.viewDidLoad()
         tableView.refreshControl = UIRefreshControl()
         setUpBindings()
+        //setActivityIndicatorView()
     }
     
     func setUpBindings() {
@@ -36,8 +36,8 @@ class MoviesPlayingListViewController: UIViewController {
         viewModel?.refreshActivated
             .debug()
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { finished in
-                self.tableView.refreshControl?.endRefreshing()
+            .subscribe(onNext: { [weak self] _ in
+                self?.tableView.refreshControl?.endRefreshing()
             })
             .disposed(by: disposeBag)
         
@@ -46,7 +46,9 @@ class MoviesPlayingListViewController: UIViewController {
             .debug()
             .map { !$0 }
             .observe(on: MainScheduler.instance)
-            .bind(to: self.activityIndicator.rx.isHidden)
+            .subscribe(onNext: { [weak self] in
+                self?.setActivityIndicatorView().isHidden = $0
+            })
             .disposed(by: disposeBag)
         
         tableView.rx.reachedBottom()
@@ -82,5 +84,16 @@ class MoviesPlayingListViewController: UIViewController {
         cell.setReleaseDate(movie.release_date)
         cell.setImage(composeMovieImageUrlRequest(posterPath: movie.poster_path ?? ""), cacheKey: "\(movie.id)")
     }
+    
+    private func setActivityIndicatorView() -> UIView {
+        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 100))
+        let spinner = UIActivityIndicatorView()
+        spinner.center = footerView.center
+        footerView.addSubview(spinner)
+        spinner.startAnimating()
+        tableView.tableFooterView = footerView
+        return footerView
+    }
+    
 }
 

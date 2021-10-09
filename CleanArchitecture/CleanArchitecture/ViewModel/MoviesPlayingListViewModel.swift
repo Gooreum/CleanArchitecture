@@ -30,7 +30,7 @@ class MoviesPlayingListViewModel {
     
     var webService: WebServiceType
     var storage: MovieStorageType
-    var networkStateUtil: NetworkState    
+    var networkStateUtil: NetworkState
     
     init(webService: WebServiceType, storage: MovieStorageType, networkStateUtil: NetworkState) {
         self.webService = webService
@@ -60,20 +60,20 @@ class MoviesPlayingListViewModel {
         //페이징 처리
         paginationfetching
             .do(onNext: { self.paginationActivating.onNext(true)})
-                .flatMap {
-                    Observable.deferred { webService.fetchMoviesPlayingRx(page: self.page) }
+            .flatMap {
+                Observable.deferred { webService.fetchMoviesPlayingRx(page: self.page) }
+            }
+            .debug()
+            .do(onNext: { _ in self.paginationActivating.onNext(false) })
+            .observe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
+                .subscribe(onNext: {[weak self] in
+                    let oldMovies = self?.moviesRelay.value ?? [Movie]()
+                    self?.moviesRelay.accept(oldMovies + $0)
+                    //페이지 추가
+                    self?.page += 1
+                })
+                .disposed(by: disposeBag)
                 }
-                .debug()
-                .do(onNext: { _ in self.paginationActivating.onNext(false) })
-                    .observe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
-                    .subscribe(onNext: {[weak self] in
-                        let oldMovies = self?.moviesRelay.value ?? [Movie]()
-                        self?.moviesRelay.accept(oldMovies + $0)
-                        //페이지 추가
-                        self?.page += 1
-                    })
-                    .disposed(by: disposeBag)
-                    }
 }
 
 /*

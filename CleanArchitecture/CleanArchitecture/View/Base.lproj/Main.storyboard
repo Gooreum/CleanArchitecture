@@ -20,14 +20,9 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="boU-t7-5gY">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <activityIndicatorView key="tableHeaderView" hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" id="duw-Ap-kqs">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="74"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <color key="color" systemColor="labelColor"/>
-                                </activityIndicatorView>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="Cell" rowHeight="434" id="g7y-ml-n45" customClass="MoviesPlayingTableViewCell" customModule="CleanArchitecture" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="118.5" width="414" height="434"/>
+                                        <rect key="frame" x="0.0" y="44.5" width="414" height="434"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="g7y-ml-n45" id="CCJ-Mr-xMb">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="434"/>
@@ -112,7 +107,6 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="activityIndicator" destination="duw-Ap-kqs" id="8yQ-Vz-Sjr"/>
                         <outlet property="tableView" destination="boU-t7-5gY" id="fga-U8-aff"/>
                         <segue destination="omP-Hf-onj" kind="show" id="xCz-67-ePJ"/>
                     </connections>
@@ -344,9 +338,6 @@
     </scenes>
     <resources>
         <image name="squidgame" width="670" height="991"/>
-        <systemColor name="labelColor">
-            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
         <systemColor name="secondarySystemBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
