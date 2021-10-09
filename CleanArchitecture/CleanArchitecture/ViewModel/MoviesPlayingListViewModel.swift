@@ -17,9 +17,9 @@ class MoviesPlayingListViewModel {
     let moviesSubject = BehaviorSubject<[Movie]>(value: [])
     
     //refresh
-    private let refresshingActivating = BehaviorSubject<Bool>(value: false)
-    let refreshingActivated: Observable<Bool>
-    let refreshingfetching = PublishSubject<Void>()
+    private let refreshActivating = BehaviorSubject<Bool>(value: false)
+    let refreshActivated: Observable<Bool>
+    let refreshfetching = PublishSubject<Void>()
     
     //pagination
     private let paginationActivating = BehaviorSubject<Bool>(value: false)
@@ -38,18 +38,18 @@ class MoviesPlayingListViewModel {
         self.storage = storage
         self.networkStateUtil = networkStateUtil
         
-        refreshingActivated = refresshingActivating.distinctUntilChanged()
+        refreshActivated = refreshActivating.distinctUntilChanged()
         paginationActivated = paginationActivating.distinctUntilChanged()
         
         //새로고침 처리
-        refreshingfetching
-            .do(onNext: { self.refresshingActivating.onNext(true)})
+        refreshfetching
+            .do(onNext: { self.refreshActivating.onNext(true)})
             .flatMapLatest {
                 Observable.deferred {
                     networkStateUtil.monitorReachability() == true ? webService.fetchMoviesPlayingRx(page: 1) : storage.myMovieList()
                 }
             }
-            .do(onNext: { _ in self.refresshingActivating.onNext(false) })
+            .do(onNext: { _ in self.refreshActivating.onNext(false) })
             .subscribe(onNext: { [weak self] in
                 self?.moviesSubject.onNext($0)
                 //페이지 추가
@@ -61,7 +61,7 @@ class MoviesPlayingListViewModel {
         //페이징 처리
         paginationfetching
             .do(onNext: { self.paginationActivating.onNext(true)})
-                .flatMap {
+                .flatMapLatest {
                     Observable.deferred { webService.fetchMoviesPlayingRx(page: self.page) }
                 }
                 .debug()

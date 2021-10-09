@@ -30,10 +30,10 @@ class MoviesPlayingListViewController: UIViewController {
             .controlEvent(.valueChanged)
             .debug()
             .startWith(())
-            .bind(to: viewModel!.refreshingfetching)
+            .bind(to: viewModel!.refreshfetching)
             .disposed(by: disposeBag)
                 
-        viewModel?.refreshingActivated
+        viewModel?.refreshActivated
             .debug()
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { finished in
@@ -51,7 +51,7 @@ class MoviesPlayingListViewController: UIViewController {
         
         tableView.rx.reachedBottom()
             .debug()
-            .skip(1)
+            .observe(on: MainScheduler.instance)
             .bind(to: viewModel!.paginationfetching)
             .disposed(by: disposeBag)
         
