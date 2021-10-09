@@ -12,9 +12,9 @@ import RxCocoa
 
 class MoviesPlayingListViewModel {
     
-    let disposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
     
-    let moviesSubject = BehaviorSubject<[Movie]>(value: [])
+    let moviesRelay = BehaviorRelay<[Movie]>(value: [])
     
     //refresh
     private let refreshActivating = BehaviorSubject<Bool>(value: false)
@@ -30,8 +30,7 @@ class MoviesPlayingListViewModel {
     
     var webService: WebServiceType
     var storage: MovieStorageType
-    var networkStateUtil: NetworkState
-    
+    var networkStateUtil: NetworkState    
     
     init(webService: WebServiceType, storage: MovieStorageType, networkStateUtil: NetworkState) {
         self.webService = webService
@@ -51,7 +50,7 @@ class MoviesPlayingListViewModel {
             }
             .do(onNext: { _ in self.refreshActivating.onNext(false) })
             .subscribe(onNext: { [weak self] in
-                self?.moviesSubject.onNext($0)
+                self?.moviesRelay.accept($0)
                 //페이지 추가
                 self?.page += 1
                 
@@ -61,21 +60,15 @@ class MoviesPlayingListViewModel {
         //페이징 처리
         paginationfetching
             .do(onNext: { self.paginationActivating.onNext(true)})
-                .flatMapLatest {
+                .flatMap {
                     Observable.deferred { webService.fetchMoviesPlayingRx(page: self.page) }
                 }
                 .debug()
                 .do(onNext: { _ in self.paginationActivating.onNext(false) })
+                    .observe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
                     .subscribe(onNext: {[weak self] in
-                        do {
-                            //moviesSubject(BehaviorSubject)가 가지고 있던 기존 영화 데이터들을 새로운 영화 데이터와 합쳐준다..
-                            //이렇게 해도 되는건가..
-                            let oldMovies = try self?.moviesSubject.value() ?? [Movie]()
-                            self?.moviesSubject.onNext(oldMovies + $0)
-                        }catch(let error) {
-                            print(error)
-                            self?.moviesSubject.onError(error)                            
-                        }
+                        let oldMovies = self?.moviesRelay.value ?? [Movie]()
+                        self?.moviesRelay.accept(oldMovies + $0)
                         //페이지 추가
                         self?.page += 1
                     })

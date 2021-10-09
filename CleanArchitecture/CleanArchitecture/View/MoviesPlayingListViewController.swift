@@ -56,9 +56,9 @@ class MoviesPlayingListViewController: UIViewController {
             .disposed(by: disposeBag)
         
         //테이블뷰 데이터 바인딩
-        viewModel?.moviesSubject
+        viewModel?.moviesRelay
             .debug()
-            .subscribe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
+            .catchAndReturn([Movie]())
             .observe(on: MainScheduler.instance)
             .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: MoviesPlayingTableViewCell.self)) { [weak self] (_, movie, cell) in
                 self?.setupCell(cell, movie: movie)
@@ -72,7 +72,7 @@ class MoviesPlayingListViewController: UIViewController {
                 movieDetailVC.movie = $0
                 self.navigationController?.pushViewController(movieDetailVC, animated: true)
             })
-            .disposed(by: disposeBag)        
+            .disposed(by: disposeBag)
     }
     
     private func setupCell(_ cell: MoviesPlayingTableViewCell, movie: Movie) {
@@ -80,7 +80,7 @@ class MoviesPlayingListViewController: UIViewController {
         cell.setTitle(movie.title)
         cell.setOverview(movie.overview)
         cell.setReleaseDate(movie.release_date)
-        cell.setImage(composeMovieImageUrlRequest(posterPath: movie.poster_path ?? ""))
+        cell.setImage(composeMovieImageUrlRequest(posterPath: movie.poster_path ?? ""), cacheKey: "\(movie.id)")
     }
 }
 
