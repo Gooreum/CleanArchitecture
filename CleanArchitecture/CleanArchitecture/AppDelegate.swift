@@ -8,10 +8,13 @@
 import UIKit
 import Swinject
 import SwinjectStoryboard
+import Kingfisher
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
+    let imageCache: ImageCache = ImageCache.default
     var container: Container = {
         let container = Container()
         
@@ -33,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let viewModel = MyMovieListViewModel(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!)
             return viewModel
         }
-                
+        
         container.storyboardInitCompleted(MoviesPlayingListViewController.self) { r, c in
             c.viewModel = r.resolve(MoviesPlayingListViewModel.self, name: "MoviesPlayingListViewModel")
         }
@@ -50,11 +53,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-     
+        
         let storyboard = SwinjectStoryboard.create(name: "Main", bundle: nil, container: container)
         self.window?.rootViewController = storyboard.instantiateInitialViewController()
         
         return true
+    }
+    
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        //이미지 캐시크기 가져오기
+        getImageCacheSize()
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        //앱 종료시 이미지 캐시 삭제
+        removeImageCache()
+    }
+}
+
+//MARK: 기능추가
+extension AppDelegate {
+    private func removeImageCache() {
+        // Remove all.
+        imageCache.clearMemoryCache()
+        imageCache.clearDiskCache { print("Done") }
+        
+        //Remove ExpiredMemory Cache.
+        imageCache.cleanExpiredMemoryCache()
+        imageCache.cleanExpiredDiskCache { print("Done") }
+    }
+    
+    private func getImageCacheSize() {
+        ImageCache.default.calculateDiskStorageSize { result in
+            switch result {
+            case .success(let size):
+                print("Disk cache size: \(Double(size) / 1024 / 1024) MB")
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
 }
 

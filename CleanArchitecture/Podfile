@@ -7,7 +7,6 @@ target 'CleanArchitecture' do
 
   # Pods for CleanArchitecture
   pod 'Alamofire'
-  pod 'AlamofireImage'
   pod 'RxSwift'
   pod 'RxCocoa'
   pod 'RxCoreData'
@@ -15,4 +14,5 @@ target 'CleanArchitecture' do
   pod 'RxDataSources'
   pod 'Swinject'
   pod 'SwinjectStoryboard'
+  pod 'Kingfisher'  
 end
