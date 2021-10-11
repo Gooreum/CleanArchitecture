@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class MovieDetailTableViewCell: UITableViewCell {
     
@@ -13,6 +14,14 @@ class MovieDetailTableViewCell: UITableViewCell {
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelReleaseDate: UILabel!
     @IBOutlet weak var labelOverview: UILabel!
+    
+    lazy var processor = DownsamplingImageProcessor(size: self.imageMovie.bounds.size)
+                    |> RoundCornerImageProcessor(cornerRadius: 20)
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        imageMovie.kf.indicatorType = .activity
+    }
     
     func setTitle(_ title: String) {
         labelTitle.text = title
@@ -27,7 +36,12 @@ class MovieDetailTableViewCell: UITableViewCell {
     }
     
     func setImage(_ url: URL) {
-        imageMovie.af.setImage(withURL: url)
+        imageMovie.kf.setImage(with: url, options: [
+            .cacheSerializer(FormatIndicatedCacheSerializer.png),
+            .processor(processor),
+            .scaleFactor(UIScreen.main.scale),
+            .transition(.fade(1)),
+            .cacheOriginalImage
+        ])
     }
-    
 }

@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import AlamofireImage
+import Kingfisher
 
 class MoviesPlayingTableViewCell: UITableViewCell {
     
@@ -14,12 +14,13 @@ class MoviesPlayingTableViewCell: UITableViewCell {
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelReleaseDate: UILabel!
     @IBOutlet weak var labelOverview: UILabel!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+        
+    lazy var processor = DownsamplingImageProcessor(size: self.imageMovie.bounds.size)
+                    |> RoundCornerImageProcessor(cornerRadius: 20)
     
-    let imageCache = AutoPurgingImageCache()
-    
-    override class func awakeFromNib() {
+    override func awakeFromNib() {
         super.awakeFromNib()
+        imageMovie.kf.indicatorType = .activity
     }
     
     func setTitle(_ title: String) {
@@ -35,8 +36,12 @@ class MoviesPlayingTableViewCell: UITableViewCell {
     }
     
     func setImage(_ url: URL) {
-        imageMovie.af.setImage(withURL: url, placeholderImage: UIImage(named: "squidgame"),completion:  { [weak self] _ in
-            self?.activityIndicator.stopAnimating()
-        })
+        imageMovie.kf.setImage(with: url, options: [
+            .cacheSerializer(FormatIndicatedCacheSerializer.png),
+            .processor(processor),
+            .scaleFactor(UIScreen.main.scale),
+            .transition(.fade(1)),
+            .cacheOriginalImage
+        ])
     }
 }
