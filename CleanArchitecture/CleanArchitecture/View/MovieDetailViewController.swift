@@ -34,7 +34,7 @@ class MovieDetailViewController: UIViewController {
         viewModel?.checkMovieInStorage(movie: movie)
         
         //저장 및 삭제 버튼 enable 처리
-        viewModel?.buttonEnabled
+        viewModel?.buttonEnabled            
             .subscribe(onNext: { [weak self] in
                 print($0)
                 switch $0 {
@@ -59,6 +59,24 @@ class MovieDetailViewController: UIViewController {
             }
             .disposed(by: disposeBag)
         
+        btnDelete.rx.tap
+            .asDriver()
+            .drive(onNext: {
+                if let movie = self.movie {
+                    self.viewModel?.deleteMovie(movie: movie)
+                }
+            })
+            .disposed(by: self.disposeBag)
+        
+        btnSave.rx.tap
+            .asDriver()
+            .drive(onNext: {
+                if let movie = self.movie {
+                    self.viewModel?.saveMovie(movie: movie)
+                }
+            })
+            .disposed(by: self.disposeBag)
+        
     }
     
     private func setupCell(_ cell: MovieDetailTableViewCell, movie: Movie) {
@@ -67,18 +85,6 @@ class MovieDetailViewController: UIViewController {
         cell.setOverview(movie.overview)
         cell.setReleaseDate(movie.release_date)
         cell.setImage(composeMovieImageUrlRequest(posterPath: movie.poster_path ?? ""))
-    }
-    
-    @IBAction func btnDelete(_ sender: Any) {
-        if let movie = self.movie {
-            viewModel?.deleteMovie(movie: movie)
-        }
-    }
-    
-    @IBAction func btnSave(_ sender: Any) {
-        if let movie = self.movie {
-            viewModel?.saveMovie(movie: movie)
-        }
     }
 }
 
