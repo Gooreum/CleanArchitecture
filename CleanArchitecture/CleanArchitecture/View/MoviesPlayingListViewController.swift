@@ -21,20 +21,20 @@ class MoviesPlayingListViewController: UIViewController {
         super.viewDidLoad()
         tableView.refreshControl = UIRefreshControl()
         setUpBindings()
-        //setActivityIndicatorView()
+        setActivityIndicatorView()
     }
     
     func setUpBindings() {
         //새로고침
         tableView.refreshControl?.rx
             .controlEvent(.valueChanged)
-            .debug()
+            .debug("<<<<<<<tableView.refreshControl?.rx>>>>>>> : ")
             .startWith(())
             .bind(to: viewModel!.refreshfetching)
             .disposed(by: disposeBag)
                 
         viewModel?.refreshActivated
-            .debug()
+            .debug("<<<<<<<viewModel?.refreshActivated>>>>>>>")
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 self?.tableView.refreshControl?.endRefreshing()
@@ -43,23 +43,23 @@ class MoviesPlayingListViewController: UIViewController {
         
         //페이징
         viewModel?.paginationActivated
-            .debug()
+            .debug("<<<<<<<viewModel?.paginationActivated>>>>>>>")
             .map { !$0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
-                self?.setActivityIndicatorView().isHidden = $0
+                self?.tableView.tableFooterView?.isHidden = $0
             })
             .disposed(by: disposeBag)
         
         tableView.rx.reachedBottom()
-            .debug()
-            .observe(on: MainScheduler.instance)
+            .debug("<<<<<<<tableView.rx.reachedBottom()>>>>>>>")            
+            //.observe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
             .bind(to: viewModel!.paginationfetching)
             .disposed(by: disposeBag)
         
         //테이블뷰 데이터 바인딩
         viewModel?.moviesRelay
-            .debug()
+            .debug("<<<<<<<viewModel?.moviesRelay>>>>>>>")
             .catchAndReturn([Movie]())
             .observe(on: MainScheduler.instance)
             .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: MoviesPlayingTableViewCell.self)) { [weak self] (_, movie, cell) in
@@ -69,10 +69,11 @@ class MoviesPlayingListViewController: UIViewController {
         
         //테이블뷰 클릭 이벤트
         tableView.rx.modelSelected(Movie.self)
-            .subscribe(onNext: {
-                let movieDetailVC = self.storyboard?.instantiateViewController(withIdentifier: "DetailVC") as! MovieDetailViewController
+            .debug("<<<<<<<tableView.rx.modelSelected(Movie.self)>>>>>>>")
+            .subscribe(onNext: { [weak self] in
+                let movieDetailVC = self?.storyboard?.instantiateViewController(withIdentifier: "DetailVC") as! MovieDetailViewController
                 movieDetailVC.movie = $0
-                self.navigationController?.pushViewController(movieDetailVC, animated: true)
+                self?.navigationController?.pushViewController(movieDetailVC, animated: true)
             })
             .disposed(by: disposeBag)
     }
@@ -82,18 +83,17 @@ class MoviesPlayingListViewController: UIViewController {
         cell.setTitle(movie.title)
         cell.setOverview(movie.overview)
         cell.setReleaseDate(movie.release_date)
-        cell.setImage(composeMovieImageUrlRequest(posterPath: movie.poster_path ?? ""), cacheKey: "\(movie.id)")
+        cell.setImage(composeMovieImageUrlRequest(posterPath: movie.poster_path ?? ""))
     }
     
-    private func setActivityIndicatorView() -> UIView {
-        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 100))
+    private func setActivityIndicatorView() {
+        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 50))
         let spinner = UIActivityIndicatorView()
         spinner.center = footerView.center
         footerView.addSubview(spinner)
         spinner.startAnimating()
         tableView.tableFooterView = footerView
-        return footerView
+        tableView.tableFooterView?.isHidden = true
     }
-    
 }
 
