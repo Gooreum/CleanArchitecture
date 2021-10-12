@@ -27,14 +27,6 @@ struct Movie: Decodable {
     let release_date: String
     let title: String
     var poster_path: String? = ""
-        
-//    init(id: Int, title: String, releaseDate: String, overview: String, poster_path: String){
-//        self.id = id
-//        self.title = title
-//        self.release_date = releaseDate
-//        self.overview = overview
-//        self.poster_path = poster_path
-//    }
 }
 
 extension Movie : Equatable {
