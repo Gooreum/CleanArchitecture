@@ -16,9 +16,6 @@ class NetworkState {
     }
     
     func monitorReachability() -> Bool{
-        return  reachability.isReachable
-        //        reachability.startListening { status in
-        //            print("Reachability Status Changed: \(status)")
-        //        }
+        return  reachability.isReachable        
     }
 }

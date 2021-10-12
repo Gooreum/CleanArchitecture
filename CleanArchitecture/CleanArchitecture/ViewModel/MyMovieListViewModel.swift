@@ -13,19 +13,18 @@ import CoreData
 
 class MyMovieListViewModel {
     
-    
     private let disposeBag = DisposeBag()
+    
     var webService: WebServiceType
     var storage: MovieStorageType
+    
+    var myMoveListSubject = BehaviorSubject<[Movie]>(value: [Movie]())
     
     init(webService: WebServiceType, storage: MovieStorageType) {
         self.webService = webService
         self.storage = storage
-        
         fetchMyMoveList()
     }
-    
-    var myMoveListSubject = BehaviorSubject<[Movie]>(value: [Movie]())
     
     func fetchMyMoveList() {
         storage.myMovieList()
@@ -33,7 +32,6 @@ class MyMovieListViewModel {
                 self?.myMoveListSubject.onNext($0)
             })
             .disposed(by: disposeBag)
-        
     }
 }
 
