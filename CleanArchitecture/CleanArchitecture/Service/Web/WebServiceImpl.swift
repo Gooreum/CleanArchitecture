@@ -53,16 +53,17 @@ class WebServiceImpl: WebServiceType {
         }
     }
     
-    func fetchMoviesPlayingRx(page: Int) -> Observable<[Movie]> {
-        return Observable.create { [weak self] emitter in
+    func fetchMoviesPlayingRx(page: Int) -> Single<[Movie]> {
+        return Single<[Movie]>.create { [weak self] emitter in
             self?.fetchMoviesPlaying(page: page) { movies, error in
                 guard error == nil else {
-                    emitter.onError(WebError.failedRequest)
+                    emitter(.failure(WebError.failedRequest))
                     return
                 }
                 if let movies = movies {
-                    emitter.onNext(movies)
-                   // emitter.onCompleted()
+                    emitter(.success(movies))
+                }else {
+                    emitter(.failure(WebError.invalidData))
                 }
             }
             return Disposables.create()

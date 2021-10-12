@@ -14,5 +14,5 @@ protocol WebServiceType {
     
     func fetchMoviesPlaying(page: Int, completion: @escaping completion<[Movie]>)
     func fetchMovieDetail(id: Int, completion: @escaping completion<[Movie]>)
-    func fetchMoviesPlayingRx(page: Int) -> Observable<[Movie]>
+    func fetchMoviesPlayingRx(page: Int) -> Single<[Movie]>
 }

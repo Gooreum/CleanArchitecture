@@ -16,6 +16,7 @@ class MoviesPlayingListViewController: UIViewController {
     
     private let disposeBag = DisposeBag()
     var viewModel: MoviesPlayingListViewModel?
+    private var page: Int = 1
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,9 +29,11 @@ class MoviesPlayingListViewController: UIViewController {
         //새로고침
         tableView.refreshControl?.rx
             .controlEvent(.valueChanged)
+            .do(onNext: {self.page = 1})
             .debug("<<<<<<<tableView.refreshControl?.rx>>>>>>> : ")
-            .startWith(())
-            .bind(to: viewModel!.refreshfetching)
+            .map{ self.page }
+            .startWith(self.page)
+            .bind(to: viewModel!.fetch)
             .disposed(by: disposeBag)
                 
         viewModel?.refreshActivated
@@ -44,7 +47,6 @@ class MoviesPlayingListViewController: UIViewController {
         //페이징
         viewModel?.paginationActivated
             .debug("<<<<<<<viewModel?.paginationActivated>>>>>>>")
-            .map { !$0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 self?.tableView.tableFooterView?.isHidden = $0
@@ -52,15 +54,15 @@ class MoviesPlayingListViewController: UIViewController {
             .disposed(by: disposeBag)
         
         tableView.rx.reachedBottom()
-            .debug("<<<<<<<tableView.rx.reachedBottom()>>>>>>>")            
-            //.observe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
-            .bind(to: viewModel!.paginationfetching)
+            .debug("<<<<<<<tableView.rx.reachedBottom()>>>>>>>")
+            .do(onNext: { self.page += 1})
+            .map { self.page }
+            .bind(to: viewModel!.fetch)
             .disposed(by: disposeBag)
         
         //테이블뷰 데이터 바인딩
         viewModel?.moviesRelay
             .debug("<<<<<<<viewModel?.moviesRelay>>>>>>>")
-            .catchAndReturn([Movie]())
             .observe(on: MainScheduler.instance)
             .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: MoviesPlayingTableViewCell.self)) { [weak self] (_, movie, cell) in
                 self?.setupCell(cell, movie: movie)

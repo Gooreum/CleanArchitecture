@@ -10,6 +10,12 @@ import RxSwift
 import Action
 import RxCocoa
 
+
+struct ResponseToGetMovie {
+    let page: Int
+    let movieList: [Movie]
+}
+
 class MoviesPlayingListViewModel {
     
     private let disposeBag = DisposeBag()
@@ -19,15 +25,12 @@ class MoviesPlayingListViewModel {
     //refresh
     private let refreshActivating = BehaviorSubject<Bool>(value: false)
     let refreshActivated: Observable<Bool>
-    let refreshfetching = PublishSubject<Void>()
     
     //pagination
     private let paginationActivating = BehaviorSubject<Bool>(value: false)
-    private var page: Int = 1
     let paginationActivated: Observable<Bool>
-    let paginationfetching = PublishSubject<Void>()
-    var pageSubject = BehaviorSubject<Int>(value: 1)
-    
+    let fetch = PublishSubject<Int>()
+        
     var webService: WebServiceType
     var storage: MovieStorageType
     var networkStateUtil: NetworkState
@@ -40,39 +43,34 @@ class MoviesPlayingListViewModel {
         refreshActivated = refreshActivating.distinctUntilChanged()
         paginationActivated = paginationActivating.distinctUntilChanged()
         
-        //새로고침 처리
-        refreshfetching
-            .do(onNext: { self.refreshActivating.onNext(true)})
-            .flatMapLatest {
-                Observable.deferred {
-                    networkStateUtil.monitorReachability() == true ? webService.fetchMoviesPlayingRx(page: 1) : storage.myMovieList()
-                }
-            }
-            .do(onNext: { _ in self.refreshActivating.onNext(false) })
-            .subscribe(onNext: { [weak self] in
-                self?.moviesRelay.accept($0)
-                //페이지 추가
-                self?.page += 1
-            })
-            .disposed(by: disposeBag)
-        
-        //페이징 처리
-        paginationfetching
+        //fetching 처리
+        fetch
             .debug("paginationFetching ::::: ")
-            .do(onNext: { self.paginationActivating.onNext(true)})
-                //왜 concatMap은 안되는지 모르겠네..
-            .flatMapLatest {
+            .do(onNext: { page in
+                if page == 1 {
+                    self.refreshActivating.onNext(true)
+                }else {
+                    self.paginationActivating.onNext(true)
+                }})
+            //왜 concatMap은 안되는지 모르겠네.. fetchMoviesPlayingRx에서 complete이 안되서 안됐음..
+            .concatMap { page in
                 Observable.deferred {
                     //MARK: TODO - 에러처리하기
-                    networkStateUtil.monitorReachability() == true ? webService.fetchMoviesPlayingRx(page: self.page) : Observable.never()
+                    networkStateUtil.monitorReachability() == true ? webService.fetchMoviesPlayingRx(page: page).map{ ResponseToGetMovie(page: page, movieList: $0) }.asObservable() : Observable.never()
                 }
             }
-            .do(onNext: { _ in self.paginationActivating.onNext(false) })
-            .subscribe(onNext: {[weak self] in
-                    let oldMovies = self?.moviesRelay.value ?? [Movie]()
-                    self?.moviesRelay.accept(oldMovies + $0)
-                    //페이지 추가
-                    self?.page += 1
+            .do(onNext: { _ in self.refreshActivating.onNext(false); self.paginationActivating.onNext(false) })
+            .scan(into: [Movie](), accumulator: { current, item in
+                print("current----------\(current)")
+                print("self.moviesRelay.value----------\(self.moviesRelay.value)")
+                if item.page != 1 {
+                    current.append(contentsOf: item.movieList)
+                }else {
+                    current = item.movieList
+                }
+            })
+            .subscribe(onNext: {[weak self] movie in
+                self?.moviesRelay.accept(movie)
                 })
             .disposed(by: disposeBag)
         }

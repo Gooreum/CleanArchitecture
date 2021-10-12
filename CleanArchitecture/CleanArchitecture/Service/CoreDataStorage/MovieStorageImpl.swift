@@ -51,7 +51,8 @@ class MovieStorageImpl: MovieStorageType {
     
     @discardableResult
     func myMovieList() -> Observable<[Movie]> {
-        return mainContext.rx.entities(Movie.self, sortDescriptors: [NSSortDescriptor(key: "release_date", ascending: false)])
+        //, sortDescriptors: [NSSortDescriptor(key: "release_date", ascending: false)]
+        return mainContext.rx.entities(Movie.self)
     }
     
     @discardableResult
