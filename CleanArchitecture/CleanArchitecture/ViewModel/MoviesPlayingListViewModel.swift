@@ -46,11 +46,11 @@ class MoviesPlayingListViewModel {
         //fetching 처리
         fetch
             .debug("paginationFetching ::::: ")
-            .do(onNext: { page in
+            .do(onNext: { [weak self] page in
                 if page == 1 {
-                    self.refreshActivating.onNext(true)
+                    self?.refreshActivating.onNext(true)
                 }else {
-                    self.paginationActivating.onNext(true)
+                    self?.paginationActivating.onNext(true)
                 }})
             //왜 concatMap은 안되는지 모르겠네.. fetchMoviesPlayingRx에서 complete이 안되서 안됐음..
             .concatMap { page in
@@ -59,7 +59,7 @@ class MoviesPlayingListViewModel {
                     networkStateUtil.monitorReachability() == true ? webService.fetchMoviesPlayingRx(page: page).map{ ResponseToGetMovie(page: page, movieList: $0) }.asObservable() : Observable.never()
                 }
             }
-            .do(onNext: { _ in self.refreshActivating.onNext(false); self.paginationActivating.onNext(false) })
+            .do(onNext: { [weak self] _ in  self?.refreshActivating.onNext(false); self?.paginationActivating.onNext(false) })
             .scan(into: [Movie](), accumulator: { current, item in
                 print("current----------\(current)")
                 print("self.moviesRelay.value----------\(self.moviesRelay.value)")
