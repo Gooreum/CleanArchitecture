@@ -53,30 +53,27 @@ class MoviesPlayingListViewModel {
                 self?.moviesRelay.accept($0)
                 //페이지 추가
                 self?.page += 1
-                
             })
             .disposed(by: disposeBag)
         
         //페이징 처리
         paginationfetching
+            .debug("paginationFetching ::::: ")
             .do(onNext: { self.paginationActivating.onNext(true)})
-            .flatMap {
-                Observable.deferred { webService.fetchMoviesPlayingRx(page: self.page) }
+                //왜 concatMap은 안되는지 모르겠네..
+            .flatMapLatest {
+                Observable.deferred {
+                    //MARK: TODO - 에러처리하기
+                    networkStateUtil.monitorReachability() == true ? webService.fetchMoviesPlayingRx(page: self.page) : Observable.never()
+                }
             }
-            .debug()
             .do(onNext: { _ in self.paginationActivating.onNext(false) })
-            .observe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
-                .subscribe(onNext: {[weak self] in
+            .subscribe(onNext: {[weak self] in
                     let oldMovies = self?.moviesRelay.value ?? [Movie]()
                     self?.moviesRelay.accept(oldMovies + $0)
                     //페이지 추가
                     self?.page += 1
                 })
-                .disposed(by: disposeBag)
-                }
+            .disposed(by: disposeBag)
+        }
 }
-
-/*
- 페이징 처리해야 될 작업
- 1.액티비티 인디케이터 보여주기 / 숨기기
- */
