@@ -21,14 +21,14 @@ let imageEndpoint = "https://image.tmdb.org/t/p/original"
 
 //상영중인 영화 리스트
 func composeMoviesPlayingUrlRequest(page: Int) -> URL {
-   let urlStr = "\(endpoint)now_playing?api_key=\(apiKey)&page=\(page)"
+   let urlStr = "\(endpoint)now_playing?api_key=\(apiKey)&language=ko&page=\(page)"
    let url = URL(string: urlStr)!
    return url
 }
 
 //영화상세정보
 func composeMovieDetailUrlRequest(id: Int) -> URL {
-   let urlStr = "\(endpoint)\(id)?api_key=\(apiKey)"
+   let urlStr = "\(endpoint)\(id)?api_key=\(apiKey)&language=ko"
    let url = URL(string: urlStr)!
    return url
 }
