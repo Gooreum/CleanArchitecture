@@ -28,9 +28,13 @@ class MyMovieListViewModel {
     
     func fetchMyMoveList() {
         storage.myMovieList()
-            .subscribe(onNext: { [weak self] in
+            .debug("[MyMovieListViewMdoel] fetchMyMovieList() / storage.myMovieList()")
+            .subscribe(onSuccess: { [weak self] in
                 self?.myMoveListSubject.onNext($0)
             })
+//            .subscribe(onNext: { [weak self] in
+//                self?.myMoveListSubject.onNext($0)
+//            })
             .disposed(by: disposeBag)
     }
 }
