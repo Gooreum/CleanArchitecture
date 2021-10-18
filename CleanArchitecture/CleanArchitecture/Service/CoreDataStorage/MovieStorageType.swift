@@ -17,7 +17,7 @@ protocol MovieStorageType {
         
     //내 영화 리스트 가져오기
     @discardableResult
-    func myMovieList() -> Observable<[Movie]>
+    func myMovieList() -> Single<[Movie]>
     
     //비교하기
     @discardableResult

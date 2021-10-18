@@ -12,7 +12,7 @@ import CoreData
 
 
 class MovieStorageImpl: MovieStorageType {
-           
+    
     let modelName: String
     
     init(modelName: String) {
@@ -23,7 +23,7 @@ class MovieStorageImpl: MovieStorageType {
         let container = NSPersistentContainer(name: self.modelName)
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
-               
+                
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         })
@@ -50,9 +50,23 @@ class MovieStorageImpl: MovieStorageType {
     }
     
     @discardableResult
-    func myMovieList() -> Observable<[Movie]> {
+    func myMovieList() -> Single<[Movie]> {
+        return Single.create { [weak self] emitter in
+            do {
+                let fetchRequest = NSFetchRequest<Movie.T>(entityName: "Movie")
+                let result = try self?.mainContext.fetch(fetchRequest)
+                emitter(.success(result.map {$0.map(Movie.init)} as! [Movie] ))
+            } catch {
+                print("Could not fetch \(error) ")
+                    emitter(.failure(error))
+            }
+            
+            return Disposables.create()
+        }
+        
         //, sortDescriptors: [NSSortDescriptor(key: "release_date", ascending: false)]
-        return mainContext.rx.entities(Movie.self)
+        //return mainContext.rx.entities(Movie.self)
+        
     }
     
     @discardableResult
@@ -76,7 +90,7 @@ class MovieStorageImpl: MovieStorageType {
             return Observable.error(error)
         }
     }
-        
+    
     //save -> 로컬DB있으니까 true 던져주고
     //delete -> 로컬DB에 없으니까 false던져줌.
     
