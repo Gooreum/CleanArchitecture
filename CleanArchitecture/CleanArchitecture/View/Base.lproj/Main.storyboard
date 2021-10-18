@@ -227,7 +227,7 @@
         <!--내 영화 모음-->
         <scene sceneID="7y7-EN-KW4">
             <objects>
-                <viewController id="NVn-p8-nY6" customClass="MyMovieListViewController" customModule="CleanArchitecture" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MyMovieListVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="NVn-p8-nY6" customClass="MyMovieListViewController" customModule="CleanArchitecture" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="EVQ-RP-qp4">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

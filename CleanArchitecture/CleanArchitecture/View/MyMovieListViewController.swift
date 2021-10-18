@@ -30,6 +30,7 @@ class MyMovieListViewController: UIViewController {
     func setUpBindings() {        
 
         viewModel?.myMoveListSubject
+            .debug("[MyMovieListViewController] viewModel?.myMovieListSubject --- ")
             .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: MoviesPlayingTableViewCell.self)) { [weak self] (_, movie, cell) in
                 self?.setupCell(cell, movie: movie)
             }

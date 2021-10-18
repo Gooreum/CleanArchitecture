@@ -21,6 +21,7 @@ class MoviesPlayingListViewModel {
     private let disposeBag = DisposeBag()
     
     let moviesRelay = BehaviorRelay<[Movie]>(value: [])
+    let movieListPage = BehaviorRelay<Int>(value: 1)
     
     //refresh
     private let refreshActivating = BehaviorSubject<Bool>(value: false)
@@ -29,6 +30,8 @@ class MoviesPlayingListViewModel {
     //pagination
     private let paginationActivating = BehaviorSubject<Bool>(value: false)
     let paginationActivated: Observable<Bool>
+    
+    //fetchAPI
     let fetch = PublishSubject<Int>()
         
     var webService: WebServiceType
@@ -47,28 +50,23 @@ class MoviesPlayingListViewModel {
         fetch
             .debug("paginationFetching ::::: ")
             .do(onNext: { [weak self] page in
-                if page == 1 {
-                    self?.refreshActivating.onNext(true)
-                }else {
-                    self?.paginationActivating.onNext(true)
-                }})
-            //왜 concatMap은 안되는지 모르겠네.. fetchMoviesPlayingRx에서 complete이 안되서 안됐음..
+                page == 1 ? self?.refreshActivating.onNext(true) : self?.paginationActivating.onNext(true)})
             .concatMap { page in
                 Observable.deferred {
                     //MARK: TODO - 에러처리하기
-                    networkStateUtil.monitorReachability() == true ? webService.fetchMoviesPlayingRx(page: page).map{ ResponseToGetMovie(page: page, movieList: $0) }.asObservable() : Observable.never()
+                    networkStateUtil.monitorReachability() == true ? webService.fetchMoviesPlayingRx(page: page).map{ ResponseToGetMovie(page: page, movieList: $0) }.asObservable() : Observable.empty()
                 }
             }
+            .debug("concatMap ::::: ")
             .do(onNext: { [weak self] _ in  self?.refreshActivating.onNext(false); self?.paginationActivating.onNext(false) })
-            .scan(into: [Movie](), accumulator: { current, item in
-                print("current----------\(current)")
-                print("self.moviesRelay.value----------\(self.moviesRelay.value)")
-                if item.page != 1 {
+            .debug("activating ::::: ")
+            .scan(into: [Movie]()) { current, item in
+                if item.page != 1 && networkStateUtil.monitorReachability() == true {
                     current.append(contentsOf: item.movieList)
-                }else {
+                }else {                    
                     current = item.movieList
                 }
-            })
+            }
             .subscribe(onNext: {[weak self] movie in
                 self?.moviesRelay.accept(movie)
                 })

@@ -29,10 +29,16 @@ class MoviesPlayingListViewController: UIViewController {
         //새로고침
         tableView.refreshControl?.rx
             .controlEvent(.valueChanged)
-            .do(onNext: {self.page = 1})
+            .do(onNext: {[weak self] in self?.page = 1})
             .debug("<<<<<<<tableView.refreshControl?.rx>>>>>>> : ")
             .map{ self.page }
             .startWith(self.page)
+            .do(onNext: { [weak self] _ in
+                if self?.viewModel!.networkStateUtil.monitorReachability() == false {
+                    let myMovieListVC = self?.storyboard?.instantiateViewController(withIdentifier: "MyMovieListVC") as! MyMovieListViewController
+                    self?.navigationController?.modalPresentationStyle = .pageSheet
+                    self?.navigationController?.present(myMovieListVC, animated: true)                    
+                }})
             .bind(to: viewModel!.fetch)
             .disposed(by: disposeBag)
                 
@@ -47,6 +53,7 @@ class MoviesPlayingListViewController: UIViewController {
         //페이징
         viewModel?.paginationActivated
             .debug("<<<<<<<viewModel?.paginationActivated>>>>>>>")
+            .map { !$0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 self?.tableView.tableFooterView?.isHidden = $0
@@ -55,7 +62,8 @@ class MoviesPlayingListViewController: UIViewController {
         
         tableView.rx.reachedBottom()
             .debug("<<<<<<<tableView.rx.reachedBottom()>>>>>>>")
-            .do(onNext: { self.page += 1})
+            .do(onNext: { [weak self] in
+                self?.viewModel!.networkStateUtil.monitorReachability() == true ? self?.page += 1 : ()})
             .map { self.page }
             .bind(to: viewModel!.fetch)
             .disposed(by: disposeBag)
