@@ -22,13 +22,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         container.register(NetworkState.self) { _ in NetworkState() }
         container.register(MovieStorageType.self) { _ in MovieStorageImpl(modelName: "Model") }
         
+        container.register(MovieRepositoriable.self, name: "MovieRepository") { r in
+            let movieRepositoryImp = MovieRepositoryImpl(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!, networkStateUtil: r.resolve(NetworkState.self)!)
+            return movieRepositoryImp
+        }
+        
+        container.register(MovieDetailUseCase.self, name: "MovieDetailUseCase") { r in
+            let usecaseImpl = MovieDetailUseCaseImpl(movieRepository: r.resolve(MovieRepositoriable.self, name:"MovieRepository")!)
+            return usecaseImpl
+        }
+        
         container.register(MoviesPlayingListViewModel.self, name: "MoviesPlayingListViewModel") { r in
             let viewModel = MoviesPlayingListViewModel(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!, networkStateUtil: r.resolve(NetworkState.self)!)
             return viewModel
         }
         
         container.register(MovieViewModel.self, name: "MovieViewModel") { r in
-            let viewModel = MovieViewModel(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!, networkStateUtil: r.resolve(NetworkState.self)!)
+            let viewModel = MovieViewModel(movieDetailUseCase: r.resolve(MovieDetailUseCase.self, name:"MovieDetailUseCase")!)
             return viewModel
         }
         
