@@ -17,8 +17,8 @@ class MovieDetailViewController: UIViewController {
     @IBOutlet weak var btnDelete: UIBarButtonItem!
     
     private let disposeBag = DisposeBag()
-    var viewModel: MovieViewModel?
     var movie: Movie?
+    var viewModel: MovieViewModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,7 +31,7 @@ class MovieDetailViewController: UIViewController {
         }
         
         //로컬DB에 상세보기 영화가 있는지 확인
-        viewModel?.checkMovieInStorage(movie: movie)
+       // viewModel?.checkMovieInStorage(movie: movie)
         
         //저장 및 삭제 버튼 enable 처리
         viewModel?.buttonEnabled
@@ -63,7 +63,7 @@ class MovieDetailViewController: UIViewController {
             .asDriver()
             .drive(onNext: {
                 if let movie = self.movie {
-                    self.viewModel?.deleteMovie(movie: movie)
+                   // self.viewModel?.deleteMovie(movie: movie)
                 }
             })
             .disposed(by: self.disposeBag)
@@ -72,19 +72,18 @@ class MovieDetailViewController: UIViewController {
             .asDriver()
             .drive(onNext: {
                 if let movie = self.movie {
-                    self.viewModel?.saveMovie(movie: movie)
+                  //  self.viewModel?.saveMovie(movie: movie)
                 }
             })
             .disposed(by: self.disposeBag)
-        
     }
     
-    private func setupCell(_ cell: MovieDetailTableViewCell, movie: Movie) {
+    private func setupCell(_ cell: MovieDetailTableViewCell, movie: MovieDetailResponseModel) {
         cell.selectionStyle = .none
-        cell.setTitle(movie.title)
-        cell.setOverview(movie.overview)
-        cell.setReleaseDate(movie.release_date)
-        cell.setImage(composeMovieImageUrlRequest(posterPath: movie.poster_path ?? ""))
+        cell.setTitle(movie.title ?? "")
+        cell.setOverview(movie.overview ?? "")
+        cell.setReleaseDate(movie.releaseDate ?? "")
+        cell.setImage(composeMovieImageUrlRequest(posterPath: movie.posterPath ?? ""))
     }
 }
 
