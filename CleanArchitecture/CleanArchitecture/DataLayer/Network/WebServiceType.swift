@@ -13,6 +13,8 @@ protocol WebServiceType {
     typealias completion<T> = (T?, WebError?) -> ()
     
     func fetchMoviesPlaying(page: Int, completion: @escaping completion<[Movie]>)
-    func fetchMovieDetail(id: Int, completion: @escaping completion<[Movie]>)
     func fetchMoviesPlayingRx(page: Int) -> Single<[Movie]>
+    func fetchMovieDetail(id: Int, completion: @escaping completion<[RemoteMovieItem]>)
+    func fetchMovieDetailRx(id: Int) -> Single<[MovieDetailEntity]>
+    
 }
