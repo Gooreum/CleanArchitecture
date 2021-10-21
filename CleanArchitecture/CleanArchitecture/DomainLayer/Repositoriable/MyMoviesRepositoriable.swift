@@ -9,5 +9,5 @@ import Foundation
 import RxSwift
 
 protocol MyMoviesRepositoriable {
-    func fetchMyMovies() -> Single<[MovieDetailEntity]>
+    func fetchMyMovies() -> Single<[MyMoviesEntity]>
 }
