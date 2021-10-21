@@ -83,9 +83,7 @@ class MoviesPlayingListViewController: UIViewController {
             .subscribe(onNext: { [weak self] in
                 print("-------------------\($0)")
                 let movieDetailVC = self?.storyboard?.instantiateViewController(withIdentifier: "DetailVC") as! MovieDetailViewController
-                //movieDetailVC.movie = $0
-                movieDetailVC.id = $0.id
-                
+                movieDetailVC.movie = $0
                 self?.navigationController?.pushViewController(movieDetailVC, animated: true)
             })
             .disposed(by: disposeBag)
