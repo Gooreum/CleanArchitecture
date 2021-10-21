@@ -28,36 +28,37 @@ class MovieViewModel {
             })
             .disposed(by: disposeBag)
     }
+    
     //영화 저장
-    //    func saveMovie(movie: Movie) {
-    //        storage.save(movie: movie)
-    //            .debug()
-    //            .subscribe(onCompleted: { [weak self] in
-    //                self?.buttonEnabled.onNext(true)
-    //            })
-    //            .disposed(by: disposeBag)
-    //    }
-    //
-    //    //영화 조회
-    //    func checkMovieInStorage(movie: Movie) {
-    //        storage.checkMovieInStore(movie: movie)
-    //            .do(onNext: {print($0)})
-    //            .subscribe(onNext: { [weak self] in
-    //                self?.buttonEnabled.onNext($0)
-    //            })
-    //            .disposed(by: disposeBag)
-    //    }
-    //
-    //    //영화 삭제
-    //    func deleteMovie(movie: Movie) {
-    //        storage.delete(movie: movie)
-    //            //.do(onNext: {print($0)})
-    //            .subscribe(onCompleted: { [weak self] in
-    //                self?.buttonEnabled.onNext(false)
-    //            })
-    //            .disposed(by: disposeBag)
-    //    }
+    func saveMovie(movie: MovieDetailRequestModel) {
+        movieDetailUseCase.saveMovie(requestModel: movie)
+            .debug()
+            .subscribe(onCompleted: { [weak self] in
+                self?.buttonEnabled.onNext(true)
+            })
+            .disposed(by: disposeBag)
+    }
     
+    //영화 조회
+    func checkMovieInStorage(movie: MovieDetailRequestModel) {
+        movieDetailUseCase.checkMovieInStore(requestModel: movie)
+            .subscribe(onNext: { [weak self] in
+                self?.buttonEnabled.onNext($0)
+            })
+            .disposed(by: disposeBag)
+    }
     
+    //영화 삭제
+    func deleteMovie(movie: MovieDetailRequestModel) {
+        movieDetailUseCase.deleteMovie(requestModel: movie)
+            .subscribe(onCompleted: { [weak self] in                
+                self?.buttonEnabled.onNext(false)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func moviesPlayingResponseModelToMovieDetailRequestModel(responseModel: MoviesPlayingResponseModel) -> MovieDetailRequestModel {
+        return MovieDetailRequestModel(id: responseModel.id, title: responseModel.title , posterPath: responseModel.posterPath , overview: responseModel.overview , releaseDate: responseModel.releaseDate )
+    }
 }
 

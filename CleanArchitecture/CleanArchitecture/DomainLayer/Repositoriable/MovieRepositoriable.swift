@@ -10,6 +10,7 @@ import RxSwift
 
 protocol MovieRepositoriable {
     func fetchMovieDetail(id: Int) -> Single<[MovieDetailEntity]>
+    func checkMovieInStore(movie: MovieDetailEntity) -> Observable<Bool>
     func saveMovie(movie: MovieDetailEntity) -> Completable
     func deleteMovie(movie: MovieDetailEntity) -> Completable
 }

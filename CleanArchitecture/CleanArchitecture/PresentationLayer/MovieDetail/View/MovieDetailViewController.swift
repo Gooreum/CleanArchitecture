@@ -17,7 +17,7 @@ class MovieDetailViewController: UIViewController {
     @IBOutlet weak var btnDelete: UIBarButtonItem!
     
     private let disposeBag = DisposeBag()
-    var movie: Movie?
+    var movie: MoviesPlayingResponseModel?    
     var viewModel: MovieViewModel?
     
     override func viewDidLoad() {
@@ -26,17 +26,15 @@ class MovieDetailViewController: UIViewController {
     }
     
     private func setUpBinding() {
-        guard let movie = self.movie else {
+        guard let movie = self.movie, let movieDetail = viewModel?.moviesPlayingResponseModelToMovieDetailRequestModel(responseModel: movie) else {
             return
         }
         
         //로컬DB에 상세보기 영화가 있는지 확인
-       // viewModel?.checkMovieInStorage(movie: movie)
-        
+        viewModel?.checkMovieInStorage(movie: movieDetail)
         //저장 및 삭제 버튼 enable 처리
         viewModel?.buttonEnabled
             .subscribe(onNext: { [weak self] in
-                print($0)
                 switch $0 {
                 case true:
                     self?.btnSave.isEnabled = false
@@ -49,7 +47,7 @@ class MovieDetailViewController: UIViewController {
             .disposed(by: disposeBag)
         
         //영화 가져오기
-        viewModel?.fetchMovieDetail(id: movie.id)
+        viewModel?.fetchMovieDetail(id: movieDetail.id)
         
         //TableView에 데이터에 바인딩 해주기
         viewModel?.movieSubject
@@ -61,21 +59,13 @@ class MovieDetailViewController: UIViewController {
         
         btnDelete.rx.tap
             .asDriver()
-            .drive(onNext: {
-                if let movie = self.movie {
-                   // self.viewModel?.deleteMovie(movie: movie)
-                }
-            })
-            .disposed(by: self.disposeBag)
+            .drive(onNext: { [weak self] in self?.viewModel?.deleteMovie(movie: movieDetail) })
+            .disposed(by: disposeBag)
         
         btnSave.rx.tap
             .asDriver()
-            .drive(onNext: {
-                if let movie = self.movie {
-                  //  self.viewModel?.saveMovie(movie: movie)
-                }
-            })
-            .disposed(by: self.disposeBag)
+            .drive(onNext: { [weak self] in self?.viewModel?.saveMovie(movie: movieDetail) })
+            .disposed(by: disposeBag)
     }
     
     private func setupCell(_ cell: MovieDetailTableViewCell, movie: MovieDetailResponseModel) {
