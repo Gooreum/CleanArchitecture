@@ -22,23 +22,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         container.register(NetworkState.self) { _ in NetworkState() }
         container.register(MovieStorageType.self) { _ in MovieStorageImpl(modelName: "Model") }
         
-        container.register(MovieRepositoriable.self, name: "MovieRepository") { r in
+        container.register(MovieRepositoriable.self, name: "MovieRepositoriable") { r in
             let movieRepositoryImp = MovieRepositoryImpl(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!, networkStateUtil: r.resolve(NetworkState.self)!)
             return movieRepositoryImp
         }
         
-        container.register(MovieDetailUseCase.self, name: "MovieDetailUseCase") { r in
-            let usecaseImpl = MovieDetailUseCaseImpl(movieRepository: r.resolve(MovieRepositoriable.self, name:"MovieRepository")!)
+        container.register(MoviesPlayingRepositoriable.self, name: "MoviesPlayingRepositoriable") { r in
+            let movieRepositoryImp = MoviesPlayingRepositoryImpl(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!, networkStateUtil: r.resolve(NetworkState.self)!)
+            return movieRepositoryImp
+        }
+        
+        container.register(MovieDetailUseCaseable.self, name: "MovieDetailUseCase") { r in
+            let usecaseImpl = MovieDetailUseCaseImpl(movieRepository: r.resolve(MovieRepositoriable.self, name:"MovieRepositoriable")!)
             return usecaseImpl
         }
         
+        container.register(MoviesPlayingUseCaseable.self, name: "MoviesPlayingUseCase") { r in
+            let usecaseImpl = MoviesPlayingUseCaseImpl(moviesPlayingRepository: r.resolve(MoviesPlayingRepositoriable.self, name:"MoviesPlayingRepositoriable")!)
+            return usecaseImpl
+        }
+        
+        
         container.register(MoviesPlayingListViewModel.self, name: "MoviesPlayingListViewModel") { r in
-            let viewModel = MoviesPlayingListViewModel(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!, networkStateUtil: r.resolve(NetworkState.self)!)
+            let viewModel = MoviesPlayingListViewModel(moviesPlayingUseCase: r.resolve(MoviesPlayingUseCaseable.self, name: "MoviesPlayingUseCase")!,  networkStateUtil: r.resolve(NetworkState.self)!)
             return viewModel
         }
         
         container.register(MovieViewModel.self, name: "MovieViewModel") { r in
-            let viewModel = MovieViewModel(movieDetailUseCase: r.resolve(MovieDetailUseCase.self, name:"MovieDetailUseCase")!)
+            let viewModel = MovieViewModel(movieDetailUseCase: r.resolve(MovieDetailUseCaseable.self, name:"MovieDetailUseCase")!)
             return viewModel
         }
         
