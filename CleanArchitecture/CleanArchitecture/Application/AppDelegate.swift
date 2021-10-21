@@ -20,21 +20,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         container.register(WebServiceType.self) { _ in WebServiceImpl() }
         container.register(NetworkState.self) { _ in NetworkState() }
-        container.register(MovieStorageType.self) { _ in MovieStorageImpl(modelName: "Model") }
-        
-        container.register(MovieRepositoriable.self, name: "MovieRepositoriable") { r in
-            let movieRepositoryImp = MovieRepositoryImpl(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!, networkStateUtil: r.resolve(NetworkState.self)!)
-            return movieRepositoryImp
-        }
+        container.register(MyMovieStorageable.self) { _ in MyMovieStorageImpl(modelName: "Model") }
         
         container.register(MoviesPlayingRepositoriable.self, name: "MoviesPlayingRepositoriable") { r in
-            let movieRepositoryImp = MoviesPlayingRepositoryImpl(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!, networkStateUtil: r.resolve(NetworkState.self)!)
+            let movieRepositoryImp = MoviesPlayingRepositoryImpl(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MyMovieStorageable.self)!, networkStateUtil: r.resolve(NetworkState.self)!)
             return movieRepositoryImp
         }
         
-        container.register(MovieDetailUseCaseable.self, name: "MovieDetailUseCase") { r in
-            let usecaseImpl = MovieDetailUseCaseImpl(movieRepository: r.resolve(MovieRepositoriable.self, name:"MovieRepositoriable")!)
-            return usecaseImpl
+        container.register(MovieRepositoriable.self, name: "MovieRepositoriable") { r in
+            let movieRepositoryImp = MovieRepositoryImpl(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MyMovieStorageable.self)!, networkStateUtil: r.resolve(NetworkState.self)!)
+            return movieRepositoryImp
+        }
+        
+        container.register(MyMoviesRepositoriable.self, name: "MyMoviesRepositoriable") { r in
+            let movieRepositoryImp = MyMoviesRepositoryImpl(storage: r.resolve(MyMovieStorageable.self)!)
+            return movieRepositoryImp
         }
         
         container.register(MoviesPlayingUseCaseable.self, name: "MoviesPlayingUseCase") { r in
@@ -42,6 +42,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return usecaseImpl
         }
         
+        container.register(MovieDetailUseCaseable.self, name: "MovieDetailUseCase") { r in
+            let usecaseImpl = MovieDetailUseCaseImpl(movieRepository: r.resolve(MovieRepositoriable.self, name:"MovieRepositoriable")!)
+            return usecaseImpl
+        }
+        
+        container.register(MyMoviesUseCaseable.self, name: "MyMoviesUseCaseable") { r in
+            let usecaseImpl = MyMoviesUseCaseImpl(myMoviesRepository: r.resolve(MyMoviesRepositoriable.self, name:"MyMoviesRepositoriable")!)
+            return usecaseImpl
+        }
         
         container.register(MoviesPlayingListViewModel.self, name: "MoviesPlayingListViewModel") { r in
             let viewModel = MoviesPlayingListViewModel(moviesPlayingUseCase: r.resolve(MoviesPlayingUseCaseable.self, name: "MoviesPlayingUseCase")!,  networkStateUtil: r.resolve(NetworkState.self)!)
@@ -54,7 +63,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         container.register(MyMovieListViewModel.self, name: "MyMovieListViewModel") { r in
-            let viewModel = MyMovieListViewModel(webService: r.resolve(WebServiceType.self)!, storage: r.resolve(MovieStorageType.self)!)
+            let viewModel = MyMovieListViewModel(myMoviesUsecase: r.resolve(MyMoviesUseCaseable.self, name: "MyMoviesUseCaseable")!)
             return viewModel
         }
         
