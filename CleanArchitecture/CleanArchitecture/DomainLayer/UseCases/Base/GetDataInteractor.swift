@@ -8,9 +8,9 @@
 import Foundation
 import RxSwift
 
-protocol GetDataInteractor {
-    associatedtype RQM: GetDataRequestModel
-    associatedtype RPM: GetDataResponseModel
+protocol GetDataInteractorable {
+    associatedtype RQM: GetDataRequestModelable
+    associatedtype RPM: GetDataResponseModelable
     
     func getData(requestModel: RQM) -> Single<RPM>
 }
