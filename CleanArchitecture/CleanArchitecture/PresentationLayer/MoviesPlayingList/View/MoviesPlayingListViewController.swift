@@ -78,22 +78,25 @@ class MoviesPlayingListViewController: UIViewController {
             .disposed(by: disposeBag)
         
         //테이블뷰 클릭 이벤트
-        tableView.rx.modelSelected(Movie.self)
+        tableView.rx.modelSelected(MoviesPlayingResponseModel.self)
             .debug("<<<<<<<tableView.rx.modelSelected(Movie.self)>>>>>>>")
             .subscribe(onNext: { [weak self] in
+                print("-------------------\($0)")
                 let movieDetailVC = self?.storyboard?.instantiateViewController(withIdentifier: "DetailVC") as! MovieDetailViewController
-                movieDetailVC.movie = $0
+                //movieDetailVC.movie = $0
+                movieDetailVC.id = $0.id
+                
                 self?.navigationController?.pushViewController(movieDetailVC, animated: true)
             })
             .disposed(by: disposeBag)
     }
     
-    private func setupCell(_ cell: MoviesPlayingTableViewCell, movie: Movie) {
+    private func setupCell(_ cell: MoviesPlayingTableViewCell, movie: MoviesPlayingResponseModel) {
         cell.selectionStyle = .none
-        cell.setTitle(movie.title)
-        cell.setOverview(movie.overview)
-        cell.setReleaseDate(movie.release_date)
-        cell.setImage(composeMovieImageUrlRequest(posterPath: movie.poster_path ?? ""))
+        cell.setTitle(movie.title ?? "")
+        cell.setOverview(movie.overview ?? "")
+        cell.setReleaseDate(movie.releaseDate ?? "")
+        cell.setImage(composeMovieImageUrlRequest(posterPath: movie.posterPath ?? ""))
     }
     
     private func setActivityIndicatorView() {
