@@ -12,11 +12,11 @@ class MoviesPlayingRepositoryImpl {
     let disposeBag = DisposeBag()
     
     let webService: WebServiceType
-    let storage: MovieStorageType
+    let storage: MyMovieStorageable
     let networkStateUtil: NetworkState
     let remoteMovieDetailMapper = RemoteMovieDetailMapper()
     
-    init(webService: WebServiceType, storage: MovieStorageType, networkStateUtil: NetworkState) {
+    init(webService: WebServiceType, storage: MyMovieStorageable, networkStateUtil: NetworkState) {
         self.webService = webService
         self.storage = storage
         self.networkStateUtil = networkStateUtil
@@ -25,13 +25,13 @@ class MoviesPlayingRepositoryImpl {
 
 extension MoviesPlayingRepositoryImpl: MoviesPlayingRepositoriable {
     func fetchMoviesPlaying(page: Int) -> Single<[MoviesPlayingEntity]> {
-        return Single.create { emitter in
-            if self.networkStateUtil.monitorReachability() == true {
-                self.webService.fetchMoviesPlayingRx(page: page)
+        return Single.create {[weak self] emitter in
+            if self?.networkStateUtil.monitorReachability() == true {
+                self?.webService.fetchMoviesPlayingRx(page: page)
                     .subscribe(onSuccess: { movies in
                         emitter(.success(movies))
                     })
-                    .disposed(by: self.disposeBag )
+                    .disposed(by: self?.disposeBag ?? DisposeBag())
             }
             return Disposables.create()
         }
