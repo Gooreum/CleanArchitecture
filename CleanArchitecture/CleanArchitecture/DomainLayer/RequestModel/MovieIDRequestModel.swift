@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct MovieIDRequestModel: GetDataRequestModel {
+struct MovieIDRequestModel: GetDataRequestModelable {
     let id: Int
 }

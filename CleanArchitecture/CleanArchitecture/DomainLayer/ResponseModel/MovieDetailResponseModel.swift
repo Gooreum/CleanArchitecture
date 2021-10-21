@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MovieDetailResponseModel: GetDataResponseModel {
+struct MovieDetailResponseModel: GetDataResponseModelable {
     let id: Int
     let title: String?
     let posterPath: String?
