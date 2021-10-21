@@ -15,9 +15,9 @@ class MovieViewModel {
     
     var buttonEnabled = BehaviorSubject<Bool>(value: false)
     var movieSubject = PublishSubject<[MovieDetailResponseModel]>()
-    let movieDetailUseCase: MovieDetailUseCase
+    let movieDetailUseCase: MovieDetailUseCaseable
     
-    init(movieDetailUseCase: MovieDetailUseCase) {
+    init(movieDetailUseCase: MovieDetailUseCaseable) {
         self.movieDetailUseCase = movieDetailUseCase
     }
     

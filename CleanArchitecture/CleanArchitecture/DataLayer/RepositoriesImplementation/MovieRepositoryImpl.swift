@@ -8,7 +8,7 @@
 import Foundation
 import RxSwift
 
-class MovieRepositoryImpl: MovieRepositoriable {
+class MovieRepositoryImpl {
     let disposeBag = DisposeBag()
     
     let webService: WebServiceType
@@ -21,7 +21,9 @@ class MovieRepositoryImpl: MovieRepositoriable {
         self.storage = storage
         self.networkStateUtil = networkStateUtil
     }
-    
+}
+
+extension MovieRepositoryImpl: MovieRepositoriable {
     func fetchMovieDetail(id: Int) -> Single<[MovieDetailEntity]> {
         return Single.create { emitter in
             if self.networkStateUtil.monitorReachability() == true {

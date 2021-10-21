@@ -8,8 +8,8 @@
 import Foundation
 import RxSwift
 
-protocol GetDataMapper {
-    typealias E = MovieDetailEntity
-    typealias RPM = MovieDetailResponseModel
-    func entityTorRsponseModel(entity: [E]) -> [RPM]
+protocol GetDataMapperable {
+    associatedtype Entity
+    associatedtype ResponseModel
+    func entityToRsponseModel(entity: Entity) -> [ResponseModel]
 }

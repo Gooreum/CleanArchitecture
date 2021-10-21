@@ -8,4 +8,4 @@
 import Foundation
 import RxSwift
 
-protocol GetDataRequestModel {}
+protocol GetDataRequestModelable {}
