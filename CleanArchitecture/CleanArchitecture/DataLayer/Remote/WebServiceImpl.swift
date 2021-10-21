@@ -20,9 +20,12 @@ enum WebError: Error {
 }
 
 class WebServiceImpl {
+    
     let networkState = NetworkState()
     let remoteMovieDetailMapper = RemoteMovieDetailMapper()
     let remoteMoviesPlayingMapper = RemoteMoviesPlayingMapper()
+    
+    typealias completion<T> = (T?, WebError?) -> ()
     
     func fetchMoviesPlaying(page: Int, completion: @escaping completion<[RemoteMoviesPlayingItem]>) {
         let url = composeMoviesPlayingUrlRequest(page: page)

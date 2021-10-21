@@ -7,15 +7,14 @@
 
 import Foundation
 import Alamofire
+import RxSwift
 
 class NetworkState {
     private var reachability: NetworkReachabilityManager!
     
-    init() {
-        reachability = NetworkReachabilityManager.default
-    }
+    init() { reachability = NetworkReachabilityManager.default }
     
-    func monitorReachability() -> Bool{
-        return  reachability.isReachable        
+    func monitorReachability() -> Bool {
+        return  reachability.isReachable
     }
 }
