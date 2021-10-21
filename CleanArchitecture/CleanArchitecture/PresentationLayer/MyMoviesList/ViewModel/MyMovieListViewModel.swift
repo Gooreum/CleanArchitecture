@@ -15,19 +15,16 @@ class MyMovieListViewModel {
     
     private let disposeBag = DisposeBag()
     
-    var webService: WebServiceType
-    var storage: MovieStorageType
+    var myMoveListSubject = BehaviorSubject<[MyMoviesResponseModel]>(value: [MyMoviesResponseModel]())
+    let myMoviesUsecase: MyMoviesUseCaseable
     
-    var myMoveListSubject = BehaviorSubject<[Movie]>(value: [Movie]())
-    
-    init(webService: WebServiceType, storage: MovieStorageType) {
-        self.webService = webService
-        self.storage = storage
+    init(myMoviesUsecase: MyMoviesUseCaseable) {
+        self.myMoviesUsecase = myMoviesUsecase
         fetchMyMoveList()
     }
     
     func fetchMyMoveList() {
-        storage.myMovieList()
+        myMoviesUsecase.fetchMyMovies(requestModel: MyMoviesRequestModel())
             .debug("[MyMovieListViewMdoel] fetchMyMovieList() / storage.myMovieList()")
             .subscribe(onSuccess: { [weak self] in
                 self?.myMoveListSubject.onNext($0)

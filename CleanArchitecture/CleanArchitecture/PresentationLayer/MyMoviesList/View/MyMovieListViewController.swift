@@ -36,23 +36,24 @@ class MyMovieListViewController: UIViewController {
             }
             .disposed(by: disposeBag)
         
-        tableView.rx.modelSelected(Movie.self)
+        tableView.rx.modelSelected(MyMoviesResponseModel.self)
             .subscribe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
+                print($0)
                 let movieDetailVC = self.storyboard?.instantiateViewController(withIdentifier: "DetailVC") as! MovieDetailViewController
-                movieDetailVC.movie = $0
-                self.navigationController?.pushViewController(movieDetailVC, animated: true)
+               // movieDetailVC.movie = $0
+                //self.navigationController?.pushViewController(movieDetailVC, animated: true)
             })
             .disposed(by: disposeBag)
     }
     
-    private func setupCell(_ cell: MoviesPlayingTableViewCell, movie: Movie) {
+    private func setupCell(_ cell: MoviesPlayingTableViewCell, movie: MyMoviesResponseModel) {
         cell.selectionStyle = .none
         cell.setTitle(movie.title)
         cell.setOverview(movie.overview)        
-        cell.setReleaseDate(movie.release_date)
-        cell.setImage(composeMovieImageUrlRequest(posterPath: movie.poster_path ?? ""))
+        cell.setReleaseDate(movie.releaseDate)
+        cell.setImage(composeMovieImageUrlRequest(posterPath: movie.posterPath))
     }
 }
 
