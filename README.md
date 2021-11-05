@@ -1,8 +1,6 @@
 # CleanArchitecture
 ## 💡 프로젝트 주제
 
----
-
 - 현재 상영중인 영화 살펴보기.
 - 현재 상영중인 영화 리스트 가져오기 API 및 상세 영화 가져오기 API를 통해 네트워크 통신.
 - 유저가 앱을 키면, 상영중인 영화 리스트가 나옴.
@@ -12,9 +10,6 @@
 - 인터넷 연결이 없는 경우 캐싱된 상영 중인 영화 정보 리스트 노출.
 
 ## 💡 사용하고자 하는 기술
-
----
-
 - MVVM
 - CleanArchitecture
 - Repository pattern ( Remote / Local )
@@ -23,21 +18,15 @@
 - Local Database ( [RxCoreData](https://github.com/RxSwiftCommunity/RxCoreData) )
 
 ## 💡 프로젝트 개발 진행방식
-
----
-
 1. MVVM 패턴을 적용하여 개발한다.
 2. CleanrArchitecture 리팩토링 한다. 
 
 ## 💡 MVVM ([MVVM branch](https://github.com/Gooreum/CleanArchitecture/tree/MVVM+Rx))
-
----
-
 ### **MVVM Dependency Map**
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/ccc450c2-a619-4e52-8852-02c959e94661/Untitled.png)
+![1](https://user-images.githubusercontent.com/48742165/140517457-96d81e75-2293-4207-a289-1caa1d9d9c8b.png)
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/aecb8139-204f-4950-a125-11d072e107ed/Untitled.png)
+![2](https://user-images.githubusercontent.com/48742165/140517476-8f9d5256-455b-41e6-9b54-ee96e6d42bb2.png)
 
 ### **View**
 
@@ -65,7 +54,7 @@
 
 - 변화가 많은 하위 컴포넌트인 Prersentation Layer와 Data Layer의 의존성이 상위 컴포넌트인 Domain Layer를 향합니다.
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/725a023a-fac2-45c7-8304-e8bb0d718ecb/Untitled.png)
+![3](https://user-images.githubusercontent.com/48742165/140517495-7cca775c-997c-43b3-a37c-dbf39e519498.png)
 
 ### **Presentation Layer**
 
