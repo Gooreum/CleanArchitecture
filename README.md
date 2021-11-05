@@ -21,6 +21,7 @@
 1. MVVM 패턴을 적용하여 개발한다.
 2. CleanrArchitecture 리팩토링 한다. 
 
+
 ## 💡 MVVM ([MVVM branch](https://github.com/Gooreum/CleanArchitecture/tree/MVVM+Rx))
 ### **MVVM Dependency Map**
 
@@ -46,10 +47,8 @@
 - Remote / 영속성 데이터 처리를 위한 로직 처리를 담당합니다.
 - RxSwift를 이용하여 자신을 구독하고 있는 ViewModel에게 연산 처리 결과를 Notify 해줍니다.
 
+
 ## 💡 **CleanArchitecture ([CleanArchitectrue branch](https://github.com/Gooreum/CleanArchitecture/tree/CleanArchitecture))**
-
----
-
 ### **CleanArchitecture Dependency Map**
 
 - 변화가 많은 하위 컴포넌트인 Prersentation Layer와 Data Layer의 의존성이 상위 컴포넌트인 Domain Layer를 향합니다.
